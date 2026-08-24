@@ -2,10 +2,8 @@ using GDCVault.Core.Models;
 
 namespace GDCVault.Client;
 
-/// Wrapper subtire de afisare peste `VaultEntry`, la fel ca ViewModel-urile
-/// din GDCPluginManagerWin (ex. AppLinkViewModel) - ListView leaga direct
-/// pe proprietati calculate (KindDisplay/ExpiryDisplay), fara sa punem
-/// logica de formatare in XAML.
+/// Wrapper subtire de afisare peste `VaultEntry` pentru ListView-ul din
+/// sidebar.
 public sealed class EntryRow
 {
     public VaultEntry Entry { get; }
@@ -13,15 +11,23 @@ public sealed class EntryRow
     public EntryRow(VaultEntry entry) => Entry = entry;
 
     public string Name => Entry.Name;
-    public string KindDisplay => Entry.Kind.DisplayName();
 
-    public string ExpiryDisplay
+    /// Rezumat compact: iconite text pentru parola/serial + tipul de
+    /// licentiere + zilele pana la expirare, intr-un singur rand - la fel
+    /// ca VaultRow.swift (Mac).
+    public string Subtitle
     {
         get
         {
-            var days = Entry.DaysUntilExpiry;
-            if (days is null) return "—";
-            return days < 0 ? "Expirat" : $"{days} zile";
+            var parts = new List<string>();
+            if (Entry.HasPassword) parts.Add("cont");
+            if (Entry.HasSerial) parts.Add("serie");
+            if (Entry.LicenseType != LicenseType.None) parts.Add(Entry.LicenseType.DisplayName());
+            if (Entry.DaysUntilExpiry is int days)
+            {
+                parts.Add(days < 0 ? "expirat" : $"{days}z");
+            }
+            return parts.Count == 0 ? "—" : string.Join(" · ", parts);
         }
     }
 }

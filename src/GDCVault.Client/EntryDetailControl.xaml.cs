@@ -1,53 +1,61 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using GDCVault.Core.Models;
 using GDCVault.Core.Services;
 using Microsoft.Win32;
 
 namespace GDCVault.Client;
 
-/// Formular unic pentru toate cele 3 tipuri, la fel ca EntryEditorView.swift
-/// (Mac) - vezi comentariile de acolo pentru rationament. Code-behind simplu
-/// (nu MVVM complet) tocmai pentru ca e "prima versiune de baza" - de
-/// extins cu ViewModel-uri dedicate cand adaugam validari mai complexe.
-public partial class EntryEditorWindow
+/// Oglinda EntryDetailView.swift (Mac) - fisa unificata de produs,
+/// embedata direct in panoul de detaliu (nu o fereastra modala separata).
+public partial class EntryDetailControl : UserControl
 {
     private readonly VaultMetadataStore _store;
     private readonly Guid _entryId;
     private readonly bool _isNew;
     private List<AttachmentRef> _attachments;
 
-    public EntryEditorWindow(VaultMetadataStore store, VaultEntry? existing)
+    public event Action<VaultEntry>? Saved;
+    public event Action? Deleted;
+    public event Action? CanceledNew;
+
+    public EntryDetailControl(VaultMetadataStore store, VaultEntry initialEntry, bool isNew)
     {
         InitializeComponent();
         _store = store;
-        _isNew = existing is null;
-        var entry = existing ?? new VaultEntry { Kind = VaultEntryKind.PerpetualLicense };
-        _entryId = entry.Id;
+        _isNew = isNew;
+        _entryId = initialEntry.Id;
+        _attachments = new List<AttachmentRef>(initialEntry.Attachments);
 
-        KindCombo.ItemsSource = Enum.GetValues<VaultEntryKind>()
-            .Select(k => new { Value = k, Display = k.DisplayName() })
+        NameBox.Text = initialEntry.Name;
+        LoginUrlBox.Text = initialEntry.LoginUrl ?? "";
+        UsernameBox.Text = initialEntry.Username ?? "";
+        PasswordLabel.Text = isNew ? "Parolă (opțional)" : "Parolă nouă (gol = nu o schimba)";
+        SerialLabel.Text = isNew ? "Cheie de serie (opțional)" : "Cheie de serie nouă (gol = nu o schimba)";
+
+        LicenseTypeCombo.ItemsSource = Enum.GetValues<LicenseType>()
+            .Select(t => new { Value = t, Display = t.DisplayName() })
             .ToList();
-        KindCombo.DisplayMemberPath = "Display";
-        KindCombo.SelectedValuePath = "Value";
-        KindCombo.SelectedValue = entry.Kind;
+        LicenseTypeCombo.DisplayMemberPath = "Display";
+        LicenseTypeCombo.SelectedValuePath = "Value";
+        LicenseTypeCombo.SelectedValue = initialEntry.LicenseType;
 
-        NameBox.Text = entry.Name;
-        HasExpiryCheck.IsChecked = entry.ExpiresAt is not null;
-        ExpiryPicker.SelectedDate = entry.ExpiresAt?.DateTime ?? DateTime.Today;
-        LoginUrlBox.Text = entry.LoginUrl ?? "";
-        UsernameBox.Text = entry.Username ?? "";
-        DownloadUrlBox.Text = entry.DownloadUrl ?? "";
-        UpdateUrlBox.Text = entry.UpdateUrl ?? "";
-        NotesBox.Text = entry.Notes ?? "";
-        _attachments = new List<AttachmentRef>(entry.Attachments);
-        RefreshAttachmentsList();
+        HasExpiryCheck.IsChecked = initialEntry.ExpiresAt is not null;
+        ExpiryPicker.SelectedDate = initialEntry.ExpiresAt?.DateTime ?? DateTime.Today;
+        DownloadUrlBox.Text = initialEntry.DownloadUrl ?? "";
+        UpdateUrlBox.Text = initialEntry.UpdateUrl ?? "";
+        NotesBox.Text = initialEntry.Notes ?? "";
 
-        DeleteButton.Visibility = _isNew ? Visibility.Collapsed : Visibility.Visible;
-        UpdateFieldVisibility();
+        DeleteButton.Visibility = isNew ? Visibility.Collapsed : Visibility.Visible;
+        CancelButton.Visibility = isNew ? Visibility.Visible : Visibility.Collapsed;
         UpdateExpiryEnabled();
+        RefreshAttachmentsList();
     }
+
+    private void OnExpiryToggled(object sender, RoutedEventArgs e) => UpdateExpiryEnabled();
+    private void UpdateExpiryEnabled() => ExpiryPicker.IsEnabled = HasExpiryCheck.IsChecked == true;
 
     private void RefreshAttachmentsList()
     {
@@ -95,25 +103,13 @@ public partial class EntryEditorWindow
         }
     }
 
-    private void OnKindChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) => UpdateFieldVisibility();
-    private void OnExpiryToggled(object sender, RoutedEventArgs e) => UpdateExpiryEnabled();
-
-    private void UpdateFieldVisibility()
-    {
-        var isCredential = (VaultEntryKind?)KindCombo.SelectedValue == VaultEntryKind.Credential;
-        CredentialFields.Visibility = isCredential ? Visibility.Visible : Visibility.Collapsed;
-        LicenseFields.Visibility = isCredential ? Visibility.Collapsed : Visibility.Visible;
-    }
-
-    private void UpdateExpiryEnabled() => ExpiryPicker.IsEnabled = HasExpiryCheck.IsChecked == true;
-
-    private void OnCancelClicked(object sender, RoutedEventArgs e) => Close();
+    private void OnCancelClicked(object sender, RoutedEventArgs e) => CanceledNew?.Invoke();
 
     private void OnDeleteClicked(object sender, RoutedEventArgs e)
     {
         var existing = _store.Entries.FirstOrDefault(x => x.Id == _entryId);
         if (existing is not null) _store.Delete(existing);
-        Close();
+        Deleted?.Invoke();
     }
 
     private void OnSaveClicked(object sender, RoutedEventArgs e)
@@ -121,33 +117,36 @@ public partial class EntryEditorWindow
         var name = NameBox.Text.Trim();
         if (string.IsNullOrEmpty(name)) return;
 
-        var kind = (VaultEntryKind)(KindCombo.SelectedValue ?? VaultEntryKind.PerpetualLicense);
+        var existing = _store.Entries.FirstOrDefault(x => x.Id == _entryId);
+
         var entry = new VaultEntry
         {
             Id = _entryId,
-            Kind = kind,
             Name = name,
-            ExpiresAt = HasExpiryCheck.IsChecked == true ? ExpiryPicker.SelectedDate : null,
             LoginUrl = string.IsNullOrEmpty(LoginUrlBox.Text) ? null : LoginUrlBox.Text,
             Username = string.IsNullOrEmpty(UsernameBox.Text) ? null : UsernameBox.Text,
+            HasPassword = existing?.HasPassword ?? false,
+            LicenseType = (LicenseType)(LicenseTypeCombo.SelectedValue ?? LicenseType.None),
+            ExpiresAt = HasExpiryCheck.IsChecked == true ? ExpiryPicker.SelectedDate : null,
+            HasSerial = existing?.HasSerial ?? false,
             DownloadUrl = string.IsNullOrEmpty(DownloadUrlBox.Text) ? null : DownloadUrlBox.Text,
             UpdateUrl = string.IsNullOrEmpty(UpdateUrlBox.Text) ? null : UpdateUrlBox.Text,
             Notes = string.IsNullOrEmpty(NotesBox.Text) ? null : NotesBox.Text,
             Attachments = _attachments
         };
 
-        var secretToSave = kind == VaultEntryKind.Credential ? SecretBox.Password : LicenseSecretBox.Password;
-        if (!string.IsNullOrEmpty(secretToSave))
+        if (!string.IsNullOrEmpty(PasswordBox.Password))
         {
-            VaultDpapiStore.Save(secretToSave, _entryId);
-            entry.HasSecret = true;
+            VaultDpapiStore.Save(PasswordBox.Password, _entryId, VaultDpapiStore.SecretSlot.Password);
+            entry.HasPassword = true;
         }
-        else
+        if (!string.IsNullOrEmpty(SerialBox.Password))
         {
-            entry.HasSecret = _store.Entries.FirstOrDefault(x => x.Id == _entryId)?.HasSecret ?? false;
+            VaultDpapiStore.Save(SerialBox.Password, _entryId, VaultDpapiStore.SecretSlot.Serial);
+            entry.HasSerial = true;
         }
 
         _store.Upsert(entry);
-        Close();
+        Saved?.Invoke(entry);
     }
 }

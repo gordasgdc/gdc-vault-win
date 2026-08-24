@@ -36,7 +36,8 @@ public static class VaultExportImport
     private sealed class ExportEntry
     {
         public VaultEntry Entry { get; set; } = new();
-        public string? Secret { get; set; }
+        public string? Password { get; set; }
+        public string? Serial { get; set; }
         public List<ExportAttachment> Attachments { get; set; } = new();
     }
 
@@ -59,7 +60,8 @@ public static class VaultExportImport
         var bundle = new ExportBundle();
         foreach (var entry in entries)
         {
-            var secret = entry.HasSecret ? VaultDpapiStore.Read(entry.Id) : null;
+            var entryPassword = entry.HasPassword ? VaultDpapiStore.Read(entry.Id, VaultDpapiStore.SecretSlot.Password) : null;
+            var entrySerial = entry.HasSerial ? VaultDpapiStore.Read(entry.Id, VaultDpapiStore.SecretSlot.Serial) : null;
 
             var attachments = new List<ExportAttachment>();
             foreach (var reference in entry.Attachments)
@@ -69,7 +71,7 @@ public static class VaultExportImport
                 attachments.Add(new ExportAttachment { Ref = reference, DataBase64 = Convert.ToBase64String(data) });
             }
 
-            bundle.Entries.Add(new ExportEntry { Entry = entry, Secret = secret, Attachments = attachments });
+            bundle.Entries.Add(new ExportEntry { Entry = entry, Password = entryPassword, Serial = entrySerial, Attachments = attachments });
         }
 
         var plaintext = JsonSerializer.SerializeToUtf8Bytes(bundle, JsonOptions);
@@ -133,10 +135,15 @@ public static class VaultExportImport
         foreach (var exportEntry in bundle.Entries)
         {
             var entry = exportEntry.Entry;
-            if (exportEntry.Secret is not null)
+            if (exportEntry.Password is not null)
             {
-                VaultDpapiStore.Save(exportEntry.Secret, entry.Id);
-                entry.HasSecret = true;
+                VaultDpapiStore.Save(exportEntry.Password, entry.Id, VaultDpapiStore.SecretSlot.Password);
+                entry.HasPassword = true;
+            }
+            if (exportEntry.Serial is not null)
+            {
+                VaultDpapiStore.Save(exportEntry.Serial, entry.Id, VaultDpapiStore.SecretSlot.Serial);
+                entry.HasSerial = true;
             }
 
             var restored = new List<AttachmentRef>();

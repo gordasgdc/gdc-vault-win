@@ -61,7 +61,7 @@ public sealed class VaultMetadataStore
     public void Delete(VaultEntry entry)
     {
         Entries.RemoveAll(e => e.Id == entry.Id);
-        VaultDpapiStore.Delete(entry.Id);
+        VaultDpapiStore.DeleteAll(entry.Id);
         AttachmentStore.RemoveAll(entry.Id);
         Save();
     }

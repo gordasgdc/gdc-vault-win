@@ -3,6 +3,15 @@
 Oglinda C# a `gdc-vault-mac`. ID produs oficial: `gdc-vault`. Vezi
 `gdc-vault-mac/CLAUDE.md` pentru rationamentul complet — aici doar ce diferă.
 
+## Arhitectura fișei de produs (rescrisă 2026-08-24)
+
+Vezi `gdc-vault-mac/CLAUDE.md` pentru rationamentul complet. Aici:
+`VaultEntry` nu mai are un tip exclusiv — are `LicenseType` (informativ) +
+`HasPassword`/`HasSerial` (DOUĂ fișiere DPAPI independente per intrare,
+vezi `VaultDpapiStore.SecretSlot`). UI: `MainWindow` cu sidebar stânga
+(butoane vizibile) + `EntryDetailControl` (UserControl, NU fereastră
+modală) embedat în panoul de detaliu.
+
 ## Structură
 
 - `src/GDCVault.Core/` — model + criptografie:

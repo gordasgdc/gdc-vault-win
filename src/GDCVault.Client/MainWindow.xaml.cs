@@ -1,5 +1,5 @@
 using System.Windows;
-using System.Windows.Input;
+using GDCVault.Core.Models;
 using GDCVault.Core.Services;
 using Microsoft.Win32;
 
@@ -8,11 +8,13 @@ namespace GDCVault.Client;
 public partial class MainWindow
 {
     private readonly VaultMetadataStore _store = new();
+    private VaultEntry? _draftEntry; // non-null cat timp se completeaza o intrare noua, inca nesalvata
 
     public MainWindow()
     {
         InitializeComponent();
         Reload();
+        ShowEmptyState();
     }
 
     private void Reload()
@@ -32,19 +34,55 @@ public partial class MainWindow
         }
     }
 
-    private void OnAddClicked(object sender, RoutedEventArgs e)
+    private void ShowEmptyState()
     {
-        var editor = new EntryEditorWindow(_store, null) { Owner = this };
-        editor.ShowDialog();
-        Reload();
+        DetailHost.Content = null;
+        EmptyStateText.Visibility = Visibility.Visible;
     }
 
-    private void OnEntryDoubleClick(object sender, MouseButtonEventArgs e)
+    private void ShowDetail(VaultEntry entry, bool isNew)
+    {
+        EmptyStateText.Visibility = Visibility.Collapsed;
+        var detail = new EntryDetailControl(_store, entry, isNew);
+        detail.Saved += saved =>
+        {
+            _draftEntry = null;
+            Reload();
+            SelectRow(saved.Id);
+        };
+        detail.Deleted += () =>
+        {
+            _draftEntry = null;
+            Reload();
+            ShowEmptyState();
+        };
+        detail.CanceledNew += () =>
+        {
+            _draftEntry = null;
+            ShowEmptyState();
+            EntriesList.SelectedItem = null;
+        };
+        DetailHost.Content = detail;
+    }
+
+    private void SelectRow(Guid entryId)
+    {
+        var row = (EntriesList.ItemsSource as IEnumerable<EntryRow>)?.FirstOrDefault(r => r.Entry.Id == entryId);
+        EntriesList.SelectedItem = row;
+    }
+
+    private void OnAddClicked(object sender, RoutedEventArgs e)
+    {
+        _draftEntry = new VaultEntry { Name = "" };
+        EntriesList.SelectedItem = null;
+        ShowDetail(_draftEntry, isNew: true);
+    }
+
+    private void OnSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
         if (EntriesList.SelectedItem is not EntryRow row) return;
-        var editor = new EntryEditorWindow(_store, row.Entry) { Owner = this };
-        editor.ShowDialog();
-        Reload();
+        _draftEntry = null;
+        ShowDetail(row.Entry, isNew: false);
     }
 
     private void OnExportClicked(object sender, RoutedEventArgs e)
