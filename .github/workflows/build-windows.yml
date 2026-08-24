@@ -1,0 +1,39 @@
+name: Build GDC Vault (Windows)
+
+# Se ruleaza automat la orice push pe main, si manual din tab-ul Actions.
+# Scop principal (2026-08-24): `dotnet build` de pe Mac NU compileaza
+# XAML->BAML (PresentationBuildTasks e Windows-only) — asta e SINGURA
+# verificare reala ca legaturile XAML (Image.Source, Converter etc.)
+# chiar functioneaza, exact lectia invatata la GDCPluginManagerWin
+# (bug-ul "coperile nu se afisau" nu a fost prins de build local pe Mac).
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Descarca codul din repo
+        uses: actions/checkout@v4
+
+      - name: Instaleaza .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Compileaza GDCVault.Core
+        run: dotnet build src/GDCVault.Core/GDCVault.Core.csproj -c Release
+
+      - name: Compileaza GDCVault.Client (verifica XAML/BAML real)
+        run: dotnet build src/GDCVault.Client/GDCVault.Client.csproj -c Release
+
+      - name: Publica exe-ul (self-contained, win-x64)
+        run: dotnet publish src/GDCVault.Client/GDCVault.Client.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish
+
+      - name: Salveaza build-ul ca artefact descarcabil
+        uses: actions/upload-artifact@v4
+        with:
+          name: GDCVault-Windows-build
+          path: publish
