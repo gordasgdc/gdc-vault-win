@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using GDCVault.Core.Models;
 using GDCVault.Core.Services;
 using Microsoft.Win32;
+using Clipboard = System.Windows.Clipboard;
 
 namespace GDCVault.Client;
 
@@ -16,6 +17,16 @@ public partial class EntryDetailControl : UserControl
     private readonly Guid _entryId;
     private readonly bool _isNew;
     private List<AttachmentRef> _attachments;
+
+    // PITFALL FIXED 2026-08-24 (bug critic de UX): PasswordBox NU poate fi
+    // legat prin binding (WPF il interzice intentionat, motiv de
+    // securitate), deci valoarea reala trebuie tinuta separat in cod ca sa
+    // supravietuiasca toggle-ului ascuns/vizibil (PasswordBox <-> TextBox).
+    // Fara asta, userul NU putea revedea parola/seria deja salvata.
+    private string _passwordValue = "";
+    private bool _passwordRevealed;
+    private string _serialValue = "";
+    private bool _serialRevealed;
 
     public event Action<VaultEntry>? Saved;
     public event Action? Deleted;
@@ -32,8 +43,13 @@ public partial class EntryDetailControl : UserControl
         NameBox.Text = initialEntry.Name;
         LoginUrlBox.Text = initialEntry.LoginUrl ?? "";
         UsernameBox.Text = initialEntry.Username ?? "";
-        PasswordLabel.Text = isNew ? "Parolă (opțional)" : "Parolă nouă (gol = nu o schimba)";
-        SerialLabel.Text = isNew ? "Cheie de serie (opțional)" : "Cheie de serie nouă (gol = nu o schimba)";
+
+        _passwordValue = initialEntry.HasPassword
+            ? VaultDpapiStore.Read(_entryId, VaultDpapiStore.SecretSlot.Password) ?? "" : "";
+        PasswordBox.Password = _passwordValue;
+        _serialValue = initialEntry.HasSerial
+            ? VaultDpapiStore.Read(_entryId, VaultDpapiStore.SecretSlot.Serial) ?? "" : "";
+        SerialBox.Password = _serialValue;
 
         LicenseTypeCombo.ItemsSource = Enum.GetValues<LicenseType>()
             .Select(t => new { Value = t, Display = t.DisplayName() })
@@ -52,6 +68,56 @@ public partial class EntryDetailControl : UserControl
         CancelButton.Visibility = isNew ? Visibility.Visible : Visibility.Collapsed;
         UpdateExpiryEnabled();
         RefreshAttachmentsList();
+    }
+
+    private void OnPasswordBoxChanged(object sender, RoutedEventArgs e) => _passwordValue = PasswordBox.Password;
+    private void OnPasswordRevealChanged(object sender, TextChangedEventArgs e) => _passwordValue = PasswordRevealBox.Text;
+
+    private void OnTogglePasswordReveal(object sender, RoutedEventArgs e)
+    {
+        _passwordRevealed = !_passwordRevealed;
+        if (_passwordRevealed)
+        {
+            PasswordRevealBox.Text = _passwordValue;
+            PasswordRevealBox.Visibility = Visibility.Visible;
+            PasswordBox.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            PasswordBox.Password = _passwordValue;
+            PasswordBox.Visibility = Visibility.Visible;
+            PasswordRevealBox.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void OnCopyPasswordClicked(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_passwordValue)) Clipboard.SetText(_passwordValue);
+    }
+
+    private void OnSerialBoxChanged(object sender, RoutedEventArgs e) => _serialValue = SerialBox.Password;
+    private void OnSerialRevealChanged(object sender, TextChangedEventArgs e) => _serialValue = SerialRevealBox.Text;
+
+    private void OnToggleSerialReveal(object sender, RoutedEventArgs e)
+    {
+        _serialRevealed = !_serialRevealed;
+        if (_serialRevealed)
+        {
+            SerialRevealBox.Text = _serialValue;
+            SerialRevealBox.Visibility = Visibility.Visible;
+            SerialBox.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            SerialBox.Password = _serialValue;
+            SerialBox.Visibility = Visibility.Visible;
+            SerialRevealBox.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void OnCopySerialClicked(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(_serialValue)) Clipboard.SetText(_serialValue);
     }
 
     private void OnExpiryToggled(object sender, RoutedEventArgs e) => UpdateExpiryEnabled();
@@ -117,32 +183,43 @@ public partial class EntryDetailControl : UserControl
         var name = NameBox.Text.Trim();
         if (string.IsNullOrEmpty(name)) return;
 
-        var existing = _store.Entries.FirstOrDefault(x => x.Id == _entryId);
-
         var entry = new VaultEntry
         {
             Id = _entryId,
             Name = name,
             LoginUrl = string.IsNullOrEmpty(LoginUrlBox.Text) ? null : LoginUrlBox.Text,
             Username = string.IsNullOrEmpty(UsernameBox.Text) ? null : UsernameBox.Text,
-            HasPassword = existing?.HasPassword ?? false,
             LicenseType = (LicenseType)(LicenseTypeCombo.SelectedValue ?? LicenseType.None),
             ExpiresAt = HasExpiryCheck.IsChecked == true ? ExpiryPicker.SelectedDate : null,
-            HasSerial = existing?.HasSerial ?? false,
             DownloadUrl = string.IsNullOrEmpty(DownloadUrlBox.Text) ? null : DownloadUrlBox.Text,
             UpdateUrl = string.IsNullOrEmpty(UpdateUrlBox.Text) ? null : UpdateUrlBox.Text,
             Notes = string.IsNullOrEmpty(NotesBox.Text) ? null : NotesBox.Text,
             Attachments = _attachments
         };
 
-        if (!string.IsNullOrEmpty(PasswordBox.Password))
+        // Camp gol la Salveaza = "fara secret" - semantica directa (ce vezi
+        // e ce se salveaza), nu "gol = nu schimba" (bug de UX fixat
+        // 2026-08-24: campul era populat mereu la deschidere, deci vidarea
+        // lui e o alegere explicita de a sterge secretul).
+        if (string.IsNullOrEmpty(_passwordValue))
         {
-            VaultDpapiStore.Save(PasswordBox.Password, _entryId, VaultDpapiStore.SecretSlot.Password);
+            VaultDpapiStore.Delete(_entryId, VaultDpapiStore.SecretSlot.Password);
+            entry.HasPassword = false;
+        }
+        else
+        {
+            VaultDpapiStore.Save(_passwordValue, _entryId, VaultDpapiStore.SecretSlot.Password);
             entry.HasPassword = true;
         }
-        if (!string.IsNullOrEmpty(SerialBox.Password))
+
+        if (string.IsNullOrEmpty(_serialValue))
         {
-            VaultDpapiStore.Save(SerialBox.Password, _entryId, VaultDpapiStore.SecretSlot.Serial);
+            VaultDpapiStore.Delete(_entryId, VaultDpapiStore.SecretSlot.Serial);
+            entry.HasSerial = false;
+        }
+        else
+        {
+            VaultDpapiStore.Save(_serialValue, _entryId, VaultDpapiStore.SecretSlot.Serial);
             entry.HasSerial = true;
         }
 

@@ -21,8 +21,20 @@
                     <ui:TextBox x:Name="LoginUrlBox" Margin="0,0,0,8" />
                     <TextBlock Text="Utilizator" Margin="0,0,0,4" />
                     <ui:TextBox x:Name="UsernameBox" Margin="0,0,0,8" />
-                    <TextBlock x:Name="PasswordLabel" Text="Parolă" Margin="0,0,0,4" />
-                    <PasswordBox x:Name="PasswordBox" />
+                    <TextBlock Text="Parolă" Margin="0,0,0,4" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <PasswordBox x:Name="PasswordBox" PasswordChanged="OnPasswordBoxChanged" />
+                            <ui:TextBox x:Name="PasswordRevealBox" Visibility="Collapsed" TextChanged="OnPasswordRevealChanged" />
+                        </Grid>
+                        <ui:Button Grid.Column="1" x:Name="PasswordEyeButton" Content="👁" Margin="4,0,0,0" Click="OnTogglePasswordReveal" ToolTip="Arată/Ascunde" />
+                        <ui:Button Grid.Column="2" Content="Copiază" Margin="4,0,0,0" Click="OnCopyPasswordClicked" />
+                    </Grid>
                 </StackPanel>
             </ui:CardExpander>
 
@@ -32,8 +44,20 @@
                     <ComboBox x:Name="LicenseTypeCombo" Margin="0,0,0,8" />
                     <CheckBox x:Name="HasExpiryCheck" Content="Are dată de expirare" Checked="OnExpiryToggled" Unchecked="OnExpiryToggled" Margin="0,0,0,6" />
                     <DatePicker x:Name="ExpiryPicker" Margin="0,0,0,8" />
-                    <TextBlock x:Name="SerialLabel" Text="Cheie de serie" Margin="0,0,0,4" />
-                    <PasswordBox x:Name="SerialBox" />
+                    <TextBlock Text="Cheie de serie" Margin="0,0,0,4" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <PasswordBox x:Name="SerialBox" PasswordChanged="OnSerialBoxChanged" />
+                            <ui:TextBox x:Name="SerialRevealBox" Visibility="Collapsed" TextChanged="OnSerialRevealChanged" />
+                        </Grid>
+                        <ui:Button Grid.Column="1" x:Name="SerialEyeButton" Content="👁" Margin="4,0,0,0" Click="OnToggleSerialReveal" ToolTip="Arată/Ascunde" />
+                        <ui:Button Grid.Column="2" Content="Copiază" Margin="4,0,0,0" Click="OnCopySerialClicked" />
+                    </Grid>
                 </StackPanel>
             </ui:CardExpander>
 
