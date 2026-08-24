@@ -13,6 +13,23 @@
       oglinda SwiftUI a aceleiasi structuri.
     -->
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Banner de proba/licenta — vizibil mereu cat timp NU exista o
+             licenta activa (LicenseManager.IsLicensed). NU blocheaza nimic
+             singur — gating-ul real e pe butonul "+ Adauga aplicatie". -->
+        <Border Grid.Row="0" x:Name="TrialBanner" Background="#332A1A" Padding="14,6" Visibility="Collapsed">
+            <DockPanel>
+                <ui:Button Content="Activează licența (5€)" Appearance="Transparent" Foreground="#4CAF50"
+                           DockPanel.Dock="Right" Click="OnActivateClicked" />
+                <TextBlock x:Name="TrialBannerText" FontSize="11" Foreground="Gray" VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280" />
             <ColumnDefinition Width="*" />
@@ -60,6 +77,7 @@
             <ContentControl x:Name="DetailHost" />
             <TextBlock x:Name="EmptyStateText" Text="Selectează o aplicație din stânga, sau adaugă una nouă."
                        HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" />
+        </Grid>
         </Grid>
     </Grid>
 </ui:FluentWindow>

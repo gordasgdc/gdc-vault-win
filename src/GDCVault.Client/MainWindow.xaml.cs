@@ -8,13 +8,36 @@ namespace GDCVault.Client;
 public partial class MainWindow
 {
     private readonly VaultMetadataStore _store = new();
+    private readonly LicenseManager _license = LicenseManager.Shared;
     private VaultEntry? _draftEntry; // non-null cat timp se completeaza o intrare noua, inca nesalvata
 
     public MainWindow()
     {
         InitializeComponent();
+        _license.Changed += RefreshTrialBanner;
+        RefreshTrialBanner();
         Reload();
         ShowEmptyState();
+    }
+
+    /// Vezi LicenseManager.cs pentru rationament: banner-ul nu blocheaza
+    /// nimic singur — doar butonul "+ Adauga aplicatie" verifica IsUnlocked.
+    private void RefreshTrialBanner()
+    {
+        if (_license.IsLicensed)
+        {
+            TrialBanner.Visibility = Visibility.Collapsed;
+            return;
+        }
+        TrialBanner.Visibility = Visibility.Visible;
+        TrialBannerText.Text = _license.IsTrialActive
+            ? $"Probă gratuită — {_license.TrialDaysRemaining} zile rămase"
+            : "Proba a expirat — poți vizualiza și exporta datele existente";
+    }
+
+    private void OnActivateClicked(object sender, RoutedEventArgs e)
+    {
+        new ActivationWindow(_license) { Owner = this }.ShowDialog();
     }
 
     private void Reload()
@@ -73,6 +96,11 @@ public partial class MainWindow
 
     private void OnAddClicked(object sender, RoutedEventArgs e)
     {
+        if (!_license.IsUnlocked)
+        {
+            new ActivationWindow(_license) { Owner = this }.ShowDialog();
+            return;
+        }
         _draftEntry = new VaultEntry { Name = "" };
         EntriesList.SelectedItem = null;
         ShowDetail(_draftEntry, isNew: true);

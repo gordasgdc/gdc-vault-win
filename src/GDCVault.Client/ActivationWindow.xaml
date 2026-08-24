@@ -1,0 +1,31 @@
+<ui:FluentWindow x:Class="GDCVault.Client.ActivationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="Activează licența GDC Vault" Height="380" Width="420"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="20">
+        <TextBlock Text="Activează licența GDC Vault" FontSize="18" FontWeight="Bold" Margin="0,0,0,14" />
+
+        <TextBlock Text="ID calculator" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
+        <DockPanel Margin="0,0,0,14">
+            <ui:Button x:Name="CopyButton" Content="Copiază" DockPanel.Dock="Right" Click="OnCopyClicked" />
+            <TextBlock x:Name="MachineIdText" FontFamily="Consolas" VerticalAlignment="Center" Margin="0,0,8,0" />
+        </DockPanel>
+
+        <TextBlock Text="Cod de activare" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
+        <ui:TextBox x:Name="CodeBox" Margin="0,0,0,10" />
+
+        <TextBlock x:Name="ErrorText" Foreground="Red" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="Collapsed" />
+
+        <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="Gray" Margin="0,0,0,14"
+                   Text="Licență Lifetime — 5€ (preț promoțional, valabil în faza de dezvoltare/beta; crește după obținerea certificatelor oficiale de semnare Apple/Windows)." />
+
+        <ui:Button Content="Cumpără prin WhatsApp" Click="OnWhatsAppClicked" Margin="0,0,0,16" />
+
+        <DockPanel>
+            <ui:Button Content="Activează" Appearance="Primary" Click="OnActivateClicked" DockPanel.Dock="Right" />
+            <ui:Button Content="Anulează" Click="OnCancelClicked" />
+        </DockPanel>
+    </StackPanel>
+</ui:FluentWindow>
