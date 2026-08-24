@@ -32,8 +32,12 @@ jobs:
       - name: Publica exe-ul (self-contained, win-x64)
         run: dotnet publish src/GDCVault.Client/GDCVault.Client.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish
 
-      - name: Salveaza build-ul ca artefact descarcabil
+      - name: Compileaza instalatorul (Inno Setup - preinstalat pe runner-ul windows-latest)
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+
+      - name: Incarca instalatorul ca artefact descarcabil
         uses: actions/upload-artifact@v4
         with:
-          name: GDCVault-Windows-build
-          path: publish
+          name: GDCVault-Windows-Installer
+          path: Output/GDCVaultSetup.exe
