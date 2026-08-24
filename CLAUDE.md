@@ -76,3 +76,12 @@ push. **Prima verificare REALA a XAML->BAML** pentru acest proiect (pana acum
 doar `dotnet build` de pe Mac, care nu compileaza XAML deloc — vezi lectia
 GDCPluginManagerWin, bug-ul "coperile nu se afisau" nescos la iveala de build
 local). Publica un exe self-contained win-x64 ca artefact descarcabil.
+
+## Licențiere (2026-08-24)
+
+Oglinda Mac — `LicenseManager.cs` (`ProductId = "gdc-vault"`,
+`TrialDurationDays = 15`), `Services/WhatsAppLink.cs`, `ActivationWindow`
+(XAML+cs). Aceeași decizie de produs: gating DOAR pe `+ Adaugă aplicație`
+(`MainWindow.xaml.cs`, `OnAddClicked`), niciodată pe vizualizare/editare/
+export/import a intrărilor existente. Detalii complete în
+`gdc-vault-mac/CLAUDE.md`.
