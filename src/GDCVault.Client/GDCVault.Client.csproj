@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- Permite dotnet restore/build sa rezolve TFM-ul windows si de pe macOS -
+         vezi acelasi comentariu in GDCPluginManagerWin/GDCPluginManager.Client.csproj.
+         Nu inlocuieste un build real pe Windows (XAML->BAML). -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>GDCVault.Client</RootNamespace>
+    <AssemblyName>GDCVault</AssemblyName>
+    <!-- Acelasi numar de versiune ca varianta Mac, la fel ca GDCPluginManager. -->
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="WPF-UI" Version="3.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GDCVault.Core\GDCVault.Core.csproj" />
+  </ItemGroup>
+
+</Project>

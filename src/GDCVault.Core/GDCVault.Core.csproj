@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>GDCVault.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Ed25519 pentru LicenseCore (.NET nu are suport nativ pe net8.0) - identic cu GDCPluginManagerWin. -->
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
+    <!-- WMI pentru MachineID (Win32_ComputerSystemProduct.UUID) - Windows-only. -->
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <!-- ProtectedData (DPAPI) nu mai e in runtime pe .NET Core/5+, e pachet separat. -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>
