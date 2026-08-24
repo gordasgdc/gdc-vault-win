@@ -28,7 +28,7 @@ public partial class ActivationWindow
 
     private void OnWhatsAppClicked(object sender, RoutedEventArgs e)
     {
-        var text = $"Bună, vreau să cumpăr licența GDC Vault (5€). ID calculator: {MachineID.Display}";
+        var text = $"Bună, vreau să donez 5€ pentru licența GDC Vault. ID calculator: {MachineID.Display}";
         Process.Start(new ProcessStartInfo(WhatsAppLink.Url(text)) { UseShellExecute = true });
     }
 

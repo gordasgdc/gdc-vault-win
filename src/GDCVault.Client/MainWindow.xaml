@@ -23,7 +23,7 @@
              singur — gating-ul real e pe butonul "+ Adauga aplicatie". -->
         <Border Grid.Row="0" x:Name="TrialBanner" Background="#332A1A" Padding="14,6" Visibility="Collapsed">
             <DockPanel>
-                <ui:Button Content="Activează licența (5€)" Appearance="Transparent" Foreground="#4CAF50"
+                <ui:Button Content="Donează 5€ pentru licență" Appearance="Transparent" Foreground="#4CAF50"
                            DockPanel.Dock="Right" Click="OnActivateClicked" />
                 <TextBlock x:Name="TrialBannerText" FontSize="11" Foreground="Gray" VerticalAlignment="Center" />
             </DockPanel>

@@ -19,9 +19,9 @@
         <TextBlock x:Name="ErrorText" Foreground="Red" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="Collapsed" />
 
         <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="Gray" Margin="0,0,0,14"
-                   Text="Licență Lifetime — 5€ (preț promoțional, valabil în faza de dezvoltare/beta; crește după obținerea certificatelor oficiale de semnare Apple/Windows)." />
+                   Text="Licență Lifetime — 5€ donație unică, nu un preț de listă. Mă ajută să acopăr costurile de dezvoltare. Ofertă valabilă în faza de dezvoltare/beta; crește după obținerea certificatelor oficiale de semnare Apple/Windows." />
 
-        <ui:Button Content="Cumpără prin WhatsApp" Click="OnWhatsAppClicked" Margin="0,0,0,16" />
+        <ui:Button Content="Donează prin WhatsApp" Click="OnWhatsAppClicked" Margin="0,0,0,16" />
 
         <DockPanel>
             <ui:Button Content="Activează" Appearance="Primary" Click="OnActivateClicked" DockPanel.Dock="Right" />
