@@ -43,6 +43,17 @@ Aici: `uninstall.ps1` curăță `Program Files\GDC Vault` (cu `-RemoveProgramFil
 la acest scaffold). **Dacă o versiune viitoare adaugă o cheie de Registry sau
 un fișier persistent nou, adaug-o în `uninstall.ps1` în ACELAȘI commit.**
 
+## Iconiță (`Assets\app.ico`)
+
+Generat din același master 1024×1024 ca `AppIcon.icns` de pe Mac (seif
+stilizat, ardezie + neon cyan/violet), via Pillow (`Image.save(..., format="ICO",
+sizes=[16,32,48,64,128,256])`) — multi-rezoluție într-un singur `.ico`, așa
+cum cere Windows pentru exe/title-bar la DPI-uri diferite. Conectat în
+`GDCVault.Client.csproj` (`<ApplicationIcon>`) și `MainWindow.xaml`
+(`Icon="pack://application:,,,/Assets/app.ico"`). **Dacă iconița se
+redesenează, regenerează din același master PNG pe Mac și copiază
+`app.ico` aici — nu există sursă separată pe Windows.**
+
 ## Rebuild local (verificare sintaxă, NU echivalent cu build Windows real)
 
 ```bash

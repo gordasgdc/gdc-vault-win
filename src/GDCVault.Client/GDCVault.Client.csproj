@@ -14,6 +14,10 @@
     <AssemblyName>GDCVault</AssemblyName>
     <!-- Acelasi numar de versiune ca varianta Mac, la fel ca GDCPluginManager. -->
     <Version>0.1.0</Version>
+    <!-- Iconita exe-ului (Assets\app.ico - generata din acelasi master 1024px
+         ca AppIcon.icns de pe Mac, ca cei doi clienti sa aiba acelasi logo:
+         seif stilizat, neon cyan/violet pe ardezie). -->
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +27,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GDCVault.Core\GDCVault.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Acelasi fisier, expus si ca Resource WPF (pack URI), pentru
+         Window.Icon (title bar/taskbar la runtime) - ApplicationIcon de mai
+         sus seteaza doar iconita exe-ului in Explorer. -->
+    <Resource Include="Assets\app.ico" />
   </ItemGroup>
 
 </Project>
