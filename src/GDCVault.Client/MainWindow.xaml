@@ -12,8 +12,11 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Margin="0,0,0,8">
-            <ui:Button Content="Adaugă" Icon="{ui:SymbolIcon Add24}"
-                       DockPanel.Dock="Right" Click="OnAddClicked" />
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                <ui:Button Content="Import…" Icon="{ui:SymbolIcon ArrowDownload24}" Click="OnImportClicked" Margin="0,0,8,0" />
+                <ui:Button Content="Export…" Icon="{ui:SymbolIcon ArrowUpload24}" Click="OnExportClicked" Margin="0,0,8,0" />
+                <ui:Button Content="Adaugă" Icon="{ui:SymbolIcon Add24}" Click="OnAddClicked" />
+            </StackPanel>
             <TextBlock Text="GDC Vault" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
         </DockPanel>
 
