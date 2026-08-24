@@ -68,3 +68,11 @@ redesenează, regenerează din același master PNG pe Mac și copiază
 ```bash
 cd ~/Downloads/gdc-vault-win && dotnet build src/GDCVault.Core/GDCVault.Core.csproj && dotnet build src/GDCVault.Client/GDCVault.Client.csproj
 ```
+
+## CI/CD (2026-08-24)
+
+`.github/workflows/build-windows.yml` — ruleaza pe `windows-latest` la orice
+push. **Prima verificare REALA a XAML->BAML** pentru acest proiect (pana acum
+doar `dotnet build` de pe Mac, care nu compileaza XAML deloc — vezi lectia
+GDCPluginManagerWin, bug-ul "coperile nu se afisau" nescos la iveala de build
+local). Publica un exe self-contained win-x64 ca artefact descarcabil.
