@@ -14,6 +14,29 @@ Inno Setup, uninstaller nativ inclus în "Apps & Features") — nicio
 modificare necesară aici, doar Mac avea probleme reale (semnare ad-hoc,
 vezi `gdc-vault-mac/CLAUDE.md`).
 
+## Completare 2026-08-26 — versiune UI + update checker (lipseau complet)
+Verificat explicit (nu presupus): NICI versiunea, NICI update checker-ul
+nu existau pe Windows, la fel ca pe Mac înainte de fix. Adăugat:
+- `GDCVault.Core/Services/UpdateChecker.cs` (nou) — port 1:1 al
+  `UpdateChecker.swift` (Mac), dar folosește direct GitHub Releases API
+  (`gordasgdc/gdc-vault-win`), NU un `update.json` separat (GDC Vault nu
+  are unul, spre deosebire de `gdc-plugin-manager`).
+- `MainWindow.xaml`: `VersionText` (footer sidebar) + buton „Caută
+  actualizări".
+- `MainWindow.xaml.cs`: `MaybeShowUpdatePopupAsync` — verificare automată
+  la `Loaded` (`respectDismissal: true`, nu reapare pt. o versiune deja
+  închisă) + click manual (`respectDismissal: false`, mereu arată
+  rezultatul real chiar dacă versiunea a fost deja închisă anterior —
+  altfel butonul manual ar minți "ești la zi" pe o versiune reală, doar
+  respinsă cândva). Pop-up cu `Wpf.Ui.Controls.MessageBox`.
+- **Găsit pe parcurs**: `installer.iss` (`MyAppVersion=0.2.0`) și
+  `GDCVault.Client.csproj` (`<Version>0.1.0</Version>`) erau ele însele
+  desincronizate între ele — sincronizate acum la `0.2.2`.
+- **Verificare**: `dotnet build` pe `GDCVault.Core` (Mac) — succeed, 0
+  erori. XAML-ul din `Client` NU se poate compila pe Mac (vezi pitfall-ul
+  identic din `gdc-plugin-manager-win/CLAUDE.md`) — validare finală prin
+  CI (`build-windows.yml`), obligatorie înainte de a declara gata.
+
 ## Arhitectura fișei de produs (rescrisă 2026-08-24)
 
 Vezi `gdc-vault-mac/CLAUDE.md` pentru rationamentul complet. Aici:

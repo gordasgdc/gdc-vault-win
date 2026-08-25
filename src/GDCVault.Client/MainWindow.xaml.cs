@@ -18,7 +18,48 @@ public partial class MainWindow
         RefreshTrialBanner();
         Reload();
         ShowEmptyState();
+        VersionText.Text = $"v{UpdateChecker.CurrentVersion}";
+        Loaded += async (_, _) => await MaybeShowUpdatePopupAsync(respectDismissal: true);
     }
+
+    /// Verificare automata la lansare + pop-up real (nu doar text discret
+    /// in footer) daca exista o versiune noua - Directiva Permanenta
+    /// Suprema. Foloseste Wpf.Ui.Controls.MessageBox (nu System.Windows.
+    /// MessageBox - acela nu poate arata text custom pe butoane).
+    /// `respectDismissal`: true la lansarea automata (nu reapare pt. o
+    /// versiune deja inchisa), false la click manual pe "Caută
+    /// actualizări" (mereu arata rezultatul real, indiferent de dismissal).
+    private async Task MaybeShowUpdatePopupAsync(bool respectDismissal, bool announceIfUpToDate = false)
+    {
+        await UpdateChecker.Shared.CheckAsync();
+        var version = UpdateChecker.Shared.AvailableVersion;
+        if (version is null || (respectDismissal && UpdateChecker.Shared.WasDismissed(version)))
+        {
+            if (announceIfUpToDate)
+            {
+                await new Wpf.Ui.Controls.MessageBox { Title = "Ești la zi", Content = $"Rulezi deja ultima versiune (v{UpdateChecker.CurrentVersion})." }.ShowDialogAsync();
+            }
+            return;
+        }
+
+        var box = new Wpf.Ui.Controls.MessageBox
+        {
+            Title = "Este disponibilă o versiune nouă",
+            Content = $"GDC Vault {version} este disponibil (tu ai {UpdateChecker.CurrentVersion}). " +
+                      "Te rugăm să descarci ultimul installer și să îl instalezi peste versiunea actuală.",
+            PrimaryButtonText = "Descarcă",
+            CloseButtonText = "Mai târziu",
+        };
+        var result = await box.ShowDialogAsync();
+        if (result == Wpf.Ui.Controls.MessageBoxResult.Primary)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(UpdateChecker.ReleasesPageUrl.ToString()) { UseShellExecute = true });
+        }
+        UpdateChecker.Shared.Dismiss();
+    }
+
+    private async void OnCheckForUpdatesClicked(object sender, RoutedEventArgs e) =>
+        await MaybeShowUpdatePopupAsync(respectDismissal: false, announceIfUpToDate: true);
 
     /// Vezi LicenseManager.cs pentru rationament: banner-ul nu blocheaza
     /// nimic singur — doar butonul "+ Adauga aplicatie" verifica IsUnlocked.

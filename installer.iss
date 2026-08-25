@@ -15,7 +15,7 @@
 ;   4. Rezultatul apare in Output\GDCVaultSetup.exe
 
 #define MyAppName "GDC Vault"
-#define MyAppVersion "0.2.0"
+#define MyAppVersion "0.2.2"
 #define MyAppPublisher "Cristi Gordas"
 #define MyAppExeName "GDCVault.exe"
 #define MyAppURL "https://gordas.dev/gdc-vault"
