@@ -3,6 +3,17 @@
 Oglinda C# a `gdc-vault-mac`. ID produs oficial: `gdc-vault`. Vezi
 `gdc-vault-mac/CLAUDE.md` pentru rationamentul complet — aici doar ce diferă.
 
+## REGULĂ PERMANENTĂ: Locația proiectului pe disc (2026-08-26)
+Acest repo trăiește în **`~/Developer/GDCVaultWin`**, NU în `~/Downloads`
+(unde a stat inițial — mutat la auditul din 2026-08-26, alături de
+`gdc-vault-mac` → `~/Developer/GDCVault`).
+
+## Audit 2026-08-26
+Release-ul `v0.2.0` era deja conform: 1 singur asset (`GDCVaultSetup.exe`,
+Inno Setup, uninstaller nativ inclus în "Apps & Features") — nicio
+modificare necesară aici, doar Mac avea probleme reale (semnare ad-hoc,
+vezi `gdc-vault-mac/CLAUDE.md`).
+
 ## Arhitectura fișei de produs (rescrisă 2026-08-24)
 
 Vezi `gdc-vault-mac/CLAUDE.md` pentru rationamentul complet. Aici:
