@@ -41,6 +41,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Margin="14">
@@ -70,6 +71,16 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+
+            <!-- Versiune mereu vizibila in UI + acces direct la verificarea
+                 de actualizari, fara sa treci prin meniu - Directiva
+                 Permanenta Suprema (vezi CLAUDE.md). -->
+            <DockPanel Grid.Row="3" Margin="14,8,14,10">
+                <TextBlock x:Name="VersionText" DockPanel.Dock="Left" FontSize="10.5"
+                           Foreground="Gray" VerticalAlignment="Center" />
+                <ui:Button DockPanel.Dock="Right" Content="Caută actualizări" Appearance="Transparent"
+                           FontSize="10.5" HorizontalAlignment="Right" Click="OnCheckForUpdatesClicked" />
+            </DockPanel>
         </Grid>
 
         <!-- Detaliu -->
