@@ -19,7 +19,30 @@ public partial class MainWindow
         Reload();
         ShowEmptyState();
         VersionText.Text = $"v{UpdateChecker.CurrentVersion}";
-        Loaded += async (_, _) => await MaybeShowUpdatePopupAsync(respectDismissal: true);
+        RefreshProfileDisplay();
+        Loaded += async (_, _) =>
+        {
+            await MaybeShowUpdatePopupAsync(respectDismissal: true);
+            await _license.RefreshRevocationAsync();
+        };
+    }
+
+    /// Profil Utilizator opțional in sidebar (vezi CLAUDE.md, Partea 1,
+    /// Regula 12) — port 1:1 al ProfileSidebarBlock.swift (Mac).
+    private void RefreshProfileDisplay()
+    {
+        ProfileNameText.Text = UserProfileStore.Shared.DisplayName;
+        ProfileEmailText.Text = UserProfileStore.Shared.Email;
+        ProfileMachineIdText.Text = UserProfileStore.Shared.MachineId;
+    }
+
+    private void OnProfileClicked(object sender, RoutedEventArgs e)
+    {
+        var window = new ProfileEditWindow { Owner = this };
+        if (window.ShowDialog() == true)
+        {
+            RefreshProfileDisplay();
+        }
     }
 
     /// Verificare automata la lansare + pop-up real (nu doar text discret
