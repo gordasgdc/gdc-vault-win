@@ -296,3 +296,11 @@ Oglinda Mac — `LicenseManager.cs` (`ProductId = "gdc-vault"`,
 (`MainWindow.xaml.cs`, `OnAddClicked`), niciodată pe vizualizare/editare/
 export/import a intrărilor existente. Detalii complete în
 `gdc-vault-mac/CLAUDE.md`.
+
+## Etapa finală (2026-08-26) — Shift UI + Profil/HWID sidebar + Revocare Licențe (Windows)
+`App.xaml.cs`: `ApplicationAccentColorManager.Apply` cu amber #E8963C —
+retemă completă via Wpf.Ui, fără să reimplementăm fiecare stil manual.
+Port 1:1 al infrastructurii Mac: `SupabaseConfig.cs`/`AnalyticsClient.cs`/
+`RevocationCheck.cs`/`UserProfileStore.cs` (Core, noi), bloc Profil în
+sidebar (`MainWindow.xaml`) + `ProfileEditWindow.xaml(.cs)` (nou, port al
+`PasswordPromptWindow`). Verificat prin CI real — success.
