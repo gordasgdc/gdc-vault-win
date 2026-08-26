@@ -39,5 +39,6 @@ jobs:
       - name: Incarca instalatorul ca artefact descarcabil
         uses: actions/upload-artifact@v4
         with:
+          retention-days: 1
           name: GDCVault-Windows-Installer
           path: Output/GDCVaultSetup.exe
