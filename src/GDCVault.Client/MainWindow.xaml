@@ -23,7 +23,7 @@
              singur — gating-ul real e pe butonul "+ Adauga aplicatie". -->
         <Border Grid.Row="0" x:Name="TrialBanner" Background="#332A1A" Padding="14,6" Visibility="Collapsed">
             <DockPanel>
-                <ui:Button Content="Donează 5€ pentru licență" Appearance="Transparent" Foreground="#4CAF50"
+                <ui:Button Content="Donează 5€ pentru licență" Appearance="Transparent" Foreground="#E8963C"
                            DockPanel.Dock="Right" Click="OnActivateClicked" />
                 <TextBlock x:Name="TrialBannerText" FontSize="11" Foreground="Gray" VerticalAlignment="Center" />
             </DockPanel>
@@ -41,6 +41,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
@@ -72,10 +73,22 @@
                 </ListView.ItemTemplate>
             </ListView>
 
+            <!-- Profil Utilizator opțional (vezi CLAUDE.md, Partea 1,
+                 Regula 12) - Nume/Anonim + Email + Machine ID, editabil
+                 prin click. Port 1:1 al ProfileSidebarBlock.swift (Mac). -->
+            <Button Grid.Row="3" Click="OnProfileClicked" Background="Transparent" BorderThickness="0"
+                    HorizontalContentAlignment="Left" Padding="14,4,14,4">
+                <StackPanel>
+                    <TextBlock x:Name="ProfileNameText" FontSize="11" FontWeight="Medium" />
+                    <TextBlock x:Name="ProfileEmailText" FontSize="10" Foreground="Gray" />
+                    <TextBlock x:Name="ProfileMachineIdText" FontSize="9.5" Foreground="Gray" FontFamily="Consolas" />
+                </StackPanel>
+            </Button>
+
             <!-- Versiune mereu vizibila in UI + acces direct la verificarea
                  de actualizari, fara sa treci prin meniu - Directiva
                  Permanenta Suprema (vezi CLAUDE.md). -->
-            <DockPanel Grid.Row="3" Margin="14,8,14,10">
+            <DockPanel Grid.Row="4" Margin="14,8,14,10">
                 <TextBlock x:Name="VersionText" DockPanel.Dock="Left" FontSize="10.5"
                            Foreground="Gray" VerticalAlignment="Center" />
                 <ui:Button DockPanel.Dock="Right" Content="Caută actualizări" Appearance="Transparent"

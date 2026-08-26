@@ -69,7 +69,11 @@ public sealed class LicenseManager
 
     /// Verificat inainte de a permite crearea unei intrari NOI (nu si
     /// vizualizarea/editarea celor existente).
-    public bool IsUnlocked => IsLicensed || IsTrialActive;
+    public bool IsUnlocked => (IsLicensed && !RevocationCheck.IsRevoked(ProductId)) || IsTrialActive;
+
+    /// Reverifica revocarea online (fail-open, vezi RevocationCheck.cs) —
+    /// apelata la lansare, niciodata sincron/blocanta pentru UI.
+    public Task RefreshRevocationAsync() => RevocationCheck.RefreshAsync(new[] { ProductId });
 
     public bool Activate(string code)
     {
@@ -81,6 +85,7 @@ public sealed class LicenseManager
             SaveLicense(trimmed);
             ApplyLicense(payload.ExpiresAt, payload.MachineLocked);
             Changed?.Invoke();
+            _ = RevocationCheck.RefreshAsync(new[] { ProductId });
             return true;
         }
         catch (LicenseCore.ValidationError error)
