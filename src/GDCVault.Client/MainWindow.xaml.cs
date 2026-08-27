@@ -104,6 +104,9 @@ public partial class MainWindow
     private async void OnCheckForUpdatesClicked(object sender, RoutedEventArgs e) =>
         await MaybeShowUpdatePopupAsync(respectDismissal: false, announceIfUpToDate: true);
 
+    private void OnSettingsClicked(object sender, RoutedEventArgs e) =>
+        new SettingsWindow { Owner = this }.ShowDialog();
+
     /// Vezi LicenseManager.cs pentru rationament: banner-ul nu blocheaza
     /// nimic singur — doar butonul "+ Adauga aplicatie" verifica IsUnlocked.
     private void RefreshTrialBanner()

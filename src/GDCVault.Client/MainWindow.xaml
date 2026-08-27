@@ -120,6 +120,8 @@
             <DockPanel Grid.Row="4" Margin="14,8,14,10">
                 <TextBlock x:Name="VersionText" DockPanel.Dock="Left" FontSize="10.5"
                            Foreground="Gray" VerticalAlignment="Center" />
+                <ui:Button DockPanel.Dock="Right" Content="⚙" Appearance="Transparent" Padding="4,0"
+                           FontSize="11" Click="OnSettingsClicked" ToolTip="Setări" />
                 <ui:Button DockPanel.Dock="Right" Content="Caută actualizări" Appearance="Transparent"
                            FontSize="10.5" HorizontalAlignment="Right" Click="OnCheckForUpdatesClicked" />
             </DockPanel>

@@ -18,6 +18,20 @@ public sealed class PurchasedAsset
     public string? DownloadUrl { get; set; }
 }
 
+/// Cont/departament SUPLIMENTAR de login pe același produs (2026-08-27) —
+/// oglinda LoginCredential (Mac). Contul PRINCIPAL rămâne LoginUrl/
+/// Username/HasPassword direct pe VaultEntry (neschimbat); acestea sunt
+/// ADIȚIONALE, listă dinamică. Parola fiecăruia e un fișier DPAPI propriu
+/// — vezi VaultDpapiStore.SaveCredentialSecret(entryId, credentialId).
+public sealed class LoginCredential
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Label { get; set; } = ""; // "Departament Video", "Cont Facturare"
+    public string? LoginUrl { get; set; }
+    public string? Username { get; set; }
+    public bool HasPassword { get; set; }
+}
+
 public sealed class VaultEntry
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -43,6 +57,9 @@ public sealed class VaultEntry
     // JSON vechi (entries.json) deserializează la default `= new()`, deci
     // intrările existente rămân valide fără migrare.
     public List<PurchasedAsset> PurchasedAssets { get; set; } = new();
+
+    // Conturi/departamente suplimentare (2026-08-27) — vezi LoginCredential.
+    public List<LoginCredential> AdditionalLogins { get; set; } = new();
 
     /// Zile pana la expirare; negativ daca a expirat deja. null = nu expira.
     public int? DaysUntilExpiry

@@ -13,7 +13,7 @@
     <RootNamespace>GDCVault.Client</RootNamespace>
     <AssemblyName>GDCVault</AssemblyName>
     <!-- Acelasi numar de versiune ca varianta Mac, la fel ca GDCPluginManager. -->
-    <Version>0.4.0</Version>
+    <Version>0.5.0</Version>
     <!-- Iconita exe-ului (Assets\app.ico - generata din acelasi master 1024px
          ca AppIcon.icns de pe Mac, ca cei doi clienti sa aiba acelasi logo:
          seif stilizat, neon cyan/violet pe ardezie). -->
@@ -34,6 +34,15 @@
          Window.Icon (title bar/taskbar la runtime) - ApplicationIcon de mai
          sus seteaza doar iconita exe-ului in Explorer. -->
     <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Ghidul PDF (RO/EN/ES) trebuie accesibil DIN aplicatia rulata
+         (Setari > Ghid) - vezi HelpGuide.cs si generate_pdf.py
+         (2026-08-27, cerinta Cristi: "nu gasesc PDF-ul"). Copiat langa
+         exe la fiecare build/publish; `[Files]` din installer.iss preia
+         automat orice fisier din publish\, deci ajunge si in installer. -->
+    <Content Include="..\..\installer\Instructiuni_Utilizare.pdf" CopyToOutputDirectory="PreserveNewest" Link="Instructiuni_Utilizare.pdf" />
   </ItemGroup>
 
 </Project>
