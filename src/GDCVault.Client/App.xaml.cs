@@ -16,6 +16,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        Services.ThemeManager.Apply();
         ApplicationAccentColorManager.Apply(Color.FromRgb(0xE8, 0x96, 0x3C));
     }
 }

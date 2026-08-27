@@ -10,6 +10,18 @@ using Clipboard = System.Windows.Clipboard;
 
 namespace GDCVault.Client;
 
+/// Stare UI locala per cont suplimentar - parola e citita/scrisa direct
+/// din DPAPI (vezi VaultDpapiStore.*CredentialSecret), nu tine de
+/// LoginCredential (care are doar HasPassword: bool, fara secret).
+public sealed class AdditionalLoginRow
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Label { get; set; } = "";
+    public string? LoginUrl { get; set; }
+    public string? Username { get; set; }
+    public string Password { get; set; } = "";
+}
+
 /// Oglinda EntryDetailView.swift (Mac) - fisa unificata de produs,
 /// embedata direct in panoul de detaliu (nu o fereastra modala separata).
 public partial class EntryDetailControl : UserControl
@@ -19,6 +31,8 @@ public partial class EntryDetailControl : UserControl
     private readonly bool _isNew;
     private List<AttachmentRef> _attachments;
     private readonly ObservableCollection<PurchasedAsset> _assets;
+    private readonly ObservableCollection<AdditionalLoginRow> _additionalLogins;
+    private readonly HashSet<Guid> _originalCredentialIds;
 
     // PITFALL FIXED 2026-08-24 (bug critic de UX): PasswordBox NU poate fi
     // legat prin binding (WPF il interzice intentionat, motiv de
@@ -43,6 +57,17 @@ public partial class EntryDetailControl : UserControl
         _attachments = new List<AttachmentRef>(initialEntry.Attachments);
         _assets = new ObservableCollection<PurchasedAsset>(initialEntry.PurchasedAssets);
         AssetsItemsControl.ItemsSource = _assets;
+
+        _additionalLogins = new ObservableCollection<AdditionalLoginRow>(initialEntry.AdditionalLogins.Select(cred => new AdditionalLoginRow
+        {
+            Id = cred.Id,
+            Label = cred.Label,
+            LoginUrl = cred.LoginUrl,
+            Username = cred.Username,
+            Password = cred.HasPassword ? (VaultDpapiStore.ReadCredentialSecret(initialEntry.Id, cred.Id) ?? "") : ""
+        }));
+        _originalCredentialIds = initialEntry.AdditionalLogins.Select(c => c.Id).ToHashSet();
+        AdditionalLoginsItemsControl.ItemsSource = _additionalLogins;
 
         NameBox.Text = initialEntry.Name;
         LoginUrlBox.Text = initialEntry.LoginUrl ?? "";
@@ -173,6 +198,13 @@ public partial class EntryDetailControl : UserControl
         }
     }
 
+    private void OnAddAdditionalLoginClicked(object sender, RoutedEventArgs e) => _additionalLogins.Add(new AdditionalLoginRow());
+
+    private void OnRemoveAdditionalLoginClicked(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is AdditionalLoginRow row) _additionalLogins.Remove(row);
+    }
+
     private void OnAddAssetClicked(object sender, RoutedEventArgs e) => _assets.Add(new PurchasedAsset());
 
     private void OnRemoveAssetClicked(object sender, RoutedEventArgs e)
@@ -227,7 +259,15 @@ public partial class EntryDetailControl : UserControl
             UpdateUrl = string.IsNullOrEmpty(UpdateUrlBox.Text) ? null : UpdateUrlBox.Text,
             Notes = string.IsNullOrEmpty(NotesBox.Text) ? null : NotesBox.Text,
             Attachments = _attachments,
-            PurchasedAssets = _assets.ToList()
+            PurchasedAssets = _assets.ToList(),
+            AdditionalLogins = _additionalLogins.Select(row => new LoginCredential
+            {
+                Id = row.Id,
+                Label = row.Label,
+                LoginUrl = string.IsNullOrEmpty(row.LoginUrl) ? null : row.LoginUrl,
+                Username = string.IsNullOrEmpty(row.Username) ? null : row.Username,
+                HasPassword = !string.IsNullOrEmpty(row.Password)
+            }).ToList()
         };
 
         // Camp gol la Salveaza = "fara secret" - semantica directa (ce vezi
@@ -254,6 +294,22 @@ public partial class EntryDetailControl : UserControl
         {
             VaultDpapiStore.Save(_serialValue, _entryId, VaultDpapiStore.SecretSlot.Serial);
             entry.HasSerial = true;
+        }
+
+        // Conturi suplimentare: scrie/sterge parola fiecarui rand in
+        // fisierul DPAPI propriu, apoi curata secretele randurilor
+        // ELIMINATE de user in aceasta sesiune de editare.
+        foreach (var row in _additionalLogins)
+        {
+            if (string.IsNullOrEmpty(row.Password))
+                VaultDpapiStore.DeleteCredentialSecret(_entryId, row.Id);
+            else
+                VaultDpapiStore.SaveCredentialSecret(row.Password, _entryId, row.Id);
+        }
+        var currentCredentialIds = _additionalLogins.Select(r => r.Id).ToHashSet();
+        foreach (var removedId in _originalCredentialIds.Except(currentCredentialIds))
+        {
+            VaultDpapiStore.DeleteCredentialSecret(_entryId, removedId);
         }
 
         _store.Upsert(entry);

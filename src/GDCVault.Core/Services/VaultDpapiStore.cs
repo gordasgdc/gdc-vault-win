@@ -56,11 +56,52 @@ public static class VaultDpapiStore
         if (File.Exists(path)) File.Delete(path);
     }
 
-    /// Sterge ambele sloturi (parola + serial) - apelat la stergerea
-    /// intregii intrari din Vault.
+    /// Sterge ambele sloturi (parola + serial) + toate conturile
+    /// suplimentare - apelat la stergerea intregii intrari din Vault.
     public static void DeleteAll(Guid entryId)
     {
         Delete(entryId, SecretSlot.Password);
         Delete(entryId, SecretSlot.Serial);
+        DeleteAllCredentialSecrets(entryId);
+    }
+
+    // MARK: - Conturi/departamente suplimentare (2026-08-27)
+    //
+    // Oglinda metodelor *CredentialSecret din VaultKeychainStore.swift
+    // (Mac) - fiecare cont suplimentar are propriul fisier DPAPI,
+    // `<entryId>.credential.<credentialId>.bin`.
+
+    private static string CredentialPathFor(Guid entryId, Guid credentialId) =>
+        Path.Combine(SecretsDir, $"{entryId}.credential.{credentialId}.bin");
+
+    public static void SaveCredentialSecret(string secret, Guid entryId, Guid credentialId)
+    {
+        var plain = Encoding.UTF8.GetBytes(secret);
+        var encrypted = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
+        File.WriteAllBytes(CredentialPathFor(entryId, credentialId), encrypted);
+    }
+
+    public static string? ReadCredentialSecret(Guid entryId, Guid credentialId)
+    {
+        var path = CredentialPathFor(entryId, credentialId);
+        if (!File.Exists(path)) return null;
+        var encrypted = File.ReadAllBytes(path);
+        var plain = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
+        return Encoding.UTF8.GetString(plain);
+    }
+
+    public static void DeleteCredentialSecret(Guid entryId, Guid credentialId)
+    {
+        var path = CredentialPathFor(entryId, credentialId);
+        if (File.Exists(path)) File.Delete(path);
+    }
+
+    public static void DeleteAllCredentialSecrets(Guid entryId)
+    {
+        var prefix = $"{entryId}.credential.";
+        foreach (var file in Directory.EnumerateFiles(SecretsDir, $"{prefix}*.bin"))
+        {
+            File.Delete(file);
+        }
     }
 }

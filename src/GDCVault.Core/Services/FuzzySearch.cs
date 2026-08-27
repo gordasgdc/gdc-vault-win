@@ -68,6 +68,13 @@ public static class VaultEntrySearchExtensions
         if (FuzzySearch.Matches(trimmed, entry.DownloadUrl)) return true;
         if (FuzzySearch.Matches(trimmed, entry.UpdateUrl)) return true;
 
+        foreach (var login in entry.AdditionalLogins)
+        {
+            if (FuzzySearch.Matches(trimmed, login.Label)) return true;
+            if (FuzzySearch.Matches(trimmed, login.LoginUrl)) return true;
+            if (FuzzySearch.Matches(trimmed, login.Username)) return true;
+        }
+
         foreach (var asset in entry.PurchasedAssets)
         {
             if (FuzzySearch.Matches(trimmed, asset.Name)) return true;

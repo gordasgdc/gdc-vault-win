@@ -374,6 +374,41 @@ nu existau pe Windows, la fel ca pe Mac înainte de fix. Adăugat:
   identic din `gdc-plugin-manager-win/CLAUDE.md`) — validare finală prin
   CI (`build-windows.yml`), obligatorie înainte de a declara gata.
 
+## Etapa 2026-08-27 (c) — Conturi multiple, Temă Light/Dark, Setări, Help PDF
+Oglindă a etapei (c) din `GDCVault/CLAUDE.md` (Mac). `LoginCredential` +
+`VaultEntry.AdditionalLogins` (nou, `VaultEntry.cs`), secrete DPAPI proprii
+per cont (`VaultDpapiStore.*CredentialSecret`, fișier
+`<entryId>.credential.<credId>.bin`, sweep la `DeleteAll`). UI:
+`EntryDetailControl` — `ItemsControl`/`ObservableCollection<AdditionalLoginRow>`
+sub parola principală. **Notă de paritate, NU o omisiune**: parola fiecărui
+cont suplimentar e un `ui:TextBox` simplu (text vizibil), nu un
+`PasswordBox` mascat ca la contul principal — binding-ul WPF pe
+`PasswordBox.Password` e blocat intenționat de framework și legarea lui
+într-un `ItemsControl` dinamic cere un behavior ata șat suplimentar; acceptat
+ca limitare cunoscută pentru acest release, de revizuit dacă devine
+relevant.
+
+`ThemeManager.cs` (nou, `Services/`) — folosește nativ
+`Wpf.Ui.Appearance.ApplicationThemeManager.Apply(...)` (pachetul deja
+folosit pentru accentul amber), NU manipulare manuală de resurse; „Sistem”
+citește tema Windows curentă o singură dată la selectare
+(`GetSystemTheme()`), nu urmărește live schimbarea temei cât aplicația
+rulează (spre deosebire de Mac, unde `NSApp.appearance = nil` urmează
+dinamic sistemul) — limitare cunoscută, acceptabilă pentru acest release.
+Persistat în `%LocalAppData%\GDC Vault\theme.txt`. `SettingsWindow.xaml(.cs)`
+(nou) — RadioButton Sistem/Light/Dark + buton Ghid PDF, deschis din
+butonul ⚙ nou din footer-ul `MainWindow` (lângă „Caută actualizări”).
+
+**Ghid PDF — lipsea COMPLET pe Windows** (nu doar inaccesibil din UI, ca pe
+Mac — nu exista deloc). Creat `installer/generate_pdf.py` (nou, oglinda
+celui de pe Mac, RO/EN/ES, pași de instalare/dezinstalare adaptați la
+Inno Setup/Apps & Features) → `Instructiuni_Utilizare.pdf`, inclus ca
+`<Content>` în `GDCVault.Client.csproj` (copiat lângă exe la fiecare
+publish — `installer.iss` îl preia automat prin `[Files] Source:
+"publish\*"`, fără nicio linie nouă necesară acolo). `HelpGuide.cs` (nou)
+îl deschide din `AppContext.BaseDirectory`. Versiune → `0.5.0`, verificat
+prin CI Windows real.
+
 ## Etapa 2026-08-27 (b) — Bara de căutare fuzzy globală
 `FuzzySearch.cs` (nou, `GDCVault.Core.Services`) — oglinda `FuzzySearch.swift`
 (Mac): substring direct, apoi subsecvență de caractere în ordine, insensibil
