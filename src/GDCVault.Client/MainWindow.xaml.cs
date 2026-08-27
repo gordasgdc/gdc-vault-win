@@ -72,6 +72,10 @@ public partial class MainWindow
     /// `respectDismissal`: true la lansarea automata (nu reapare pt. o
     /// versiune deja inchisa), false la click manual pe "Caută
     /// actualizări" (mereu arata rezultatul real, indiferent de dismissal).
+    ///
+    /// BUG FIX 2026-08-27 (raportat de Cristi cu screenshot: butonul
+    /// "Descarcă" deschidea github.com in browser): acum descarca si
+    /// lanseaza installer-ul direct, prin SelfUpdater - vezi SelfUpdater.cs.
     private async Task MaybeShowUpdatePopupAsync(bool respectDismissal, bool announceIfUpToDate = false)
     {
         await UpdateChecker.Shared.CheckAsync();
@@ -89,16 +93,16 @@ public partial class MainWindow
         {
             Title = "Este disponibilă o versiune nouă",
             Content = $"GDC Vault {version} este disponibil (tu ai {UpdateChecker.CurrentVersion}). " +
-                      "Te rugăm să descarci ultimul installer și să îl instalezi peste versiunea actuală.",
-            PrimaryButtonText = "Descarcă",
+                      "Apasă „Actualizează acum” pentru a descărca și instala automat.",
+            PrimaryButtonText = "Actualizează acum",
             CloseButtonText = "Mai târziu",
         };
         var result = await box.ShowDialogAsync();
+        UpdateChecker.Shared.Dismiss();
         if (result == Wpf.Ui.Controls.MessageBoxResult.Primary)
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(UpdateChecker.DirectDownloadUrl.ToString()) { UseShellExecute = true });
+            await SelfUpdater.DownloadAndInstallAsync(version);
         }
-        UpdateChecker.Shared.Dismiss();
     }
 
     private async void OnCheckForUpdatesClicked(object sender, RoutedEventArgs e) =>

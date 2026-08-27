@@ -10,8 +10,15 @@ namespace GDCVault.Core.Services;
 /// Compara versiunea rulata cu ultimul tag de pe GitHub Releases
 /// (gdc-vault-win) - GDC Vault nu are un update.json separat (spre
 /// deosebire de GDCPluginManager), deci foloseste direct API-ul GitHub,
-/// port 1:1 al UpdateChecker.swift de pe gdc-vault-mac. Doar informativ -
-/// nu blocheaza nimic, doar ofera un pop-up + link de download.
+/// port 1:1 al UpdateChecker.swift de pe gdc-vault-mac.
+///
+/// BUG FIX 2026-08-27 (raportat de Cristi, pe Mac ȘI Windows: "clientul
+/// niciodata nu trebuie sa vada GitHub"): un fix anterior din aceeasi zi
+/// doar inlocuise link-ul paginii cu link-ul DIRECT al asset-ului - tot
+/// deschidea browserul, doar descarca fisierul in loc sa arate pagina.
+/// Nu era suficient. Fix REAL, vezi SelfUpdater.cs: descarca installer-ul
+/// cu HttpClient si il lanseaza direct (Process.Start), fara sa treaca
+/// deloc prin browser.
 public sealed class UpdateChecker : INotifyPropertyChanged
 {
     public static readonly UpdateChecker Shared = new();
