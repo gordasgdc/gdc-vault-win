@@ -374,6 +374,12 @@ nu existau pe Windows, la fel ca pe Mac înainte de fix. Adăugat:
   identic din `gdc-plugin-manager-win/CLAUDE.md`) — validare finală prin
   CI (`build-windows.yml`), obligatorie înainte de a declara gata.
 
+## Release-țintă de test 2026-08-27 — v0.5.4, FĂRĂ schimbare funcțională
+Oglindă a țintei de test `v0.5.3` din `GDCVault/CLAUDE.md` (Mac). Cristi
+trebuie să instaleze o dată manual `v0.5.3` (prima versiune cu
+Self-Updater), apoi să verifice din aplicație că „Actualizează acum”
+descarcă+lansează installer-ul `v0.5.4` fără să deschidă browserul.
+
 ## Bug real 2026-08-27 (f) — Self-Updater real (fix-ul de link direct NU era suficient)
 Oglindă a etapei (e) din `GDCVault/CLAUDE.md` (Mac). Fix-ul anterior (e)
 (link direct spre asset) tot deschidea browserul — Cristi a semnalat cu
