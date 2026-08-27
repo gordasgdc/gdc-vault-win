@@ -374,6 +374,19 @@ nu existau pe Windows, la fel ca pe Mac înainte de fix. Adăugat:
   identic din `gdc-plugin-manager-win/CLAUDE.md`) — validare finală prin
   CI (`build-windows.yml`), obligatorie înainte de a declara gata.
 
+## Bug real 2026-08-27 (e) — "Descarcă" din popup-ul de update deschidea pagina GitHub, nu descărca
+Raportat de Cristi cu screenshot: apăsând "Descarcă" în popup-ul "Este
+disponibilă o versiune nouă", browserul deschidea
+`github.com/.../releases/latest` (pagina web a release-ului, cu asset-urile
+listate) — userul trebuia să mai caute și să apese link-ul exe-ului
+manual, nu se declanșa nicio descărcare. Bug REAL, nu doar cosmetic — și
+exista IDENTIC pe Mac (`UpdateChecker.swift`/`ContentView.swift`), scăpat
+la fel de la implementarea inițială. Fix: `UpdateChecker.DirectDownloadUrl`
+(nou) → `releases/latest/download/GDCVaultSetup.exe` (asset direct, nu
+pagina) — deschiderea lui în browser DECLANȘEAZĂ descărcarea fișierului,
+spre deosebire de `ReleasesPageUrl`. `MainWindow.xaml.cs` actualizat să
+folosească noul link. Versiune → `0.5.2` (PATCH).
+
 ## Bug real 2026-08-27 (d) — fereastra nu se putea deplasa (raportat de Cristi)
 Simptom: "fereastra rămâne fixă, nu o pot deplasa pe ecran" — primul test
 real al v0.5.0 pe Windows (nu doar CI/`dotnet build`). Cauză reală:

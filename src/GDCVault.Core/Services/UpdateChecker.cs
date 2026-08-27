@@ -21,6 +21,16 @@ public sealed class UpdateChecker : INotifyPropertyChanged
     public static readonly Uri ReleasesPageUrl =
         new("https://github.com/gordasgdc/gdc-vault-win/releases/latest");
 
+    /// BUG FIX 2026-08-27 (raportat de Cristi: butonul "Descarcă" duce pe
+    /// pagina GitHub, nu descarcă direct): link direct spre asset-ul
+    /// installer-ului, `releases/latest/download/<nume-stabil>` (vezi
+    /// CLAUDE.md Regula 13/17) - deschiderea lui in browser DECLANSEAZA
+    /// descarcarea fisierului, spre deosebire de ReleasesPageUrl (pagina
+    /// web a release-ului, cu asset-urile listate, dar niciunul descarcat
+    /// automat).
+    public static readonly Uri DirectDownloadUrl =
+        new("https://github.com/gordasgdc/gdc-vault-win/releases/latest/download/GDCVaultSetup.exe");
+
     private readonly HttpClient _http = new();
     private const string DismissedVersionKey = "gdcvault_dismissed_update_version";
 

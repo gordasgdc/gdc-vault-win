@@ -96,7 +96,7 @@ public partial class MainWindow
         var result = await box.ShowDialogAsync();
         if (result == Wpf.Ui.Controls.MessageBoxResult.Primary)
         {
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(UpdateChecker.ReleasesPageUrl.ToString()) { UseShellExecute = true });
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(UpdateChecker.DirectDownloadUrl.ToString()) { UseShellExecute = true });
         }
         UpdateChecker.Shared.Dismiss();
     }
