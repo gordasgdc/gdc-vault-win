@@ -374,6 +374,29 @@ nu existau pe Windows, la fel ca pe Mac înainte de fix. Adăugat:
   identic din `gdc-plugin-manager-win/CLAUDE.md`) — validare finală prin
   CI (`build-windows.yml`), obligatorie înainte de a declara gata.
 
+## Bug real 2026-08-27 (d) — fereastra nu se putea deplasa (raportat de Cristi)
+Simptom: "fereastra rămâne fixă, nu o pot deplasa pe ecran" — primul test
+real al v0.5.0 pe Windows (nu doar CI/`dotnet build`). Cauză reală:
+`ui:FluentWindow` (Wpf.Ui) înlocuiește chrome-ul nativ Windows cu propriul
+`WindowChrome` și NU oferă nicio zonă de drag/butoane minimize-maximize-
+close fără un `<ui:TitleBar>` explicit în XAML — lipsea din TOATE cele 5
+ferestre ale aplicației (`MainWindow`, `SettingsWindow`, `ActivationWindow`,
+`PasswordPromptWindow`, `ProfileEditWindow`), bug PRE-EXISTENT de la
+scaffold-ul inițial (2026-08-24), scos la iveală abia acum de primul test
+interactiv real — `dotnet build`/CI verifică doar compilare XAML→BAML, nu
+comportament runtime de drag. Fix: `<ui:TitleBar>` adăugat în toate cele 5
+(rând `Auto` nou în Grid rădăcină, conținutul vechi mutat pe rândul
+următor) — `MainWindow`/`SettingsWindow` cu minimize/maximize/close
+complet, dialogurile mici (`ActivationWindow`/`PasswordPromptWindow`/
+`ProfileEditWindow`) cu `ShowMaximize="False" ShowMinimize="False"
+CanMaximize="False"` (ferestre modale de dimensiune fixă). **Regulă
+practică nouă**: orice `ui:FluentWindow` nou din acest repo TREBUIE să
+includă `<ui:TitleBar>` de la primul XAML scris, nu adăugat ulterior — fără
+el fereastra e complet neutilizabilă (nu se poate muta/minimiza/închide
+prin UI, doar Alt+F4). Versiune → `0.5.1` (PATCH), verificat prin CI
+Windows real (compilare, nu comportament runtime — necesită confirmare
+vizuală de la Cristi pe build-ul următor).
+
 ## Etapa 2026-08-27 (c) — Conturi multiple, Temă Light/Dark, Setări, Help PDF
 Oglindă a etapei (c) din `GDCVault/CLAUDE.md` (Mac). `LoginCredential` +
 `VaultEntry.AdditionalLogins` (nou, `VaultEntry.cs`), secrete DPAPI proprii

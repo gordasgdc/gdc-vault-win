@@ -4,7 +4,15 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         Title="Profil utilizator (opțional)" Height="280" Width="360"
         WindowStartupLocation="CenterOwner">
-    <StackPanel Margin="16">
+    <!-- BUG FIX 2026-08-27: FluentWindow fara <ui:TitleBar> nu poate fi
+         deplasata/mutata pe ecran (vezi MainWindow.xaml pentru detalii). -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TitleBar Grid.Row="0" Title="Profil utilizator (opțional)" ShowMaximize="False" ShowMinimize="False" CanMaximize="False" />
+    <StackPanel Grid.Row="1" Margin="16">
         <TextBlock Text="Nume" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
         <TextBox x:Name="NameBox" Margin="0,0,0,10" />
         <TextBlock Text="Email" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
@@ -16,4 +24,5 @@
             <ui:Button Content="Salvează" Appearance="Primary" Click="OnSaveClicked" />
         </StackPanel>
     </StackPanel>
+    </Grid>
 </ui:FluentWindow>

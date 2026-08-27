@@ -4,7 +4,15 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         Title="Activează licența GDC Vault" Height="380" Width="420"
         WindowStartupLocation="CenterOwner">
-    <StackPanel Margin="20">
+    <!-- BUG FIX 2026-08-27: FluentWindow fara <ui:TitleBar> nu poate fi
+         deplasata/mutata pe ecran (vezi MainWindow.xaml pentru detalii). -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TitleBar Grid.Row="0" Title="Activează licența GDC Vault" ShowMaximize="False" ShowMinimize="False" CanMaximize="False" />
+    <StackPanel Grid.Row="1" Margin="20">
         <TextBlock Text="Activează licența GDC Vault" FontSize="18" FontWeight="Bold" Margin="0,0,0,14" />
 
         <TextBlock Text="ID calculator" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
@@ -28,4 +36,5 @@
             <ui:Button Content="Anulează" Click="OnCancelClicked" />
         </DockPanel>
     </StackPanel>
+    </Grid>
 </ui:FluentWindow>
