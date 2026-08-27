@@ -55,6 +55,18 @@
                     <ui:Button Content="Export" Icon="{ui:SymbolIcon ArrowUpload24}" Margin="0,0,4,0" Click="OnExportClicked" />
                     <ui:Button Content="Import" Icon="{ui:SymbolIcon ArrowDownload24}" Margin="4,0,0,0" Click="OnImportClicked" />
                 </UniformGrid>
+
+                <!-- Cautare fuzzy globala (2026-08-27) - Nume, URL login,
+                     Notite, Resurse si asset-uri cumparate. Vezi FuzzySearch.cs.
+                     ui:TextBox simplu (nu AutoSuggestBox) - extinde direct
+                     System.Windows.Controls.TextBox, deci TextChanged e
+                     evenimentul standard TextChangedEventHandler, fara
+                     ambiguitate de semnatura. -->
+                <DockPanel Margin="0,8,0,0">
+                    <TextBlock DockPanel.Dock="Left" Text="🔍" FontSize="12" Margin="6,0,4,0" VerticalAlignment="Center" />
+                    <ui:TextBox x:Name="SearchBox" PlaceholderText="Caută aplicație, asset, notiță, serie…"
+                                TextChanged="OnSearchTextChanged" />
+                </DockPanel>
             </StackPanel>
 
             <Border Grid.Row="1" x:Name="ExpiringBanner" Background="#332E1A" CornerRadius="6"

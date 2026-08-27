@@ -124,9 +124,15 @@ public partial class MainWindow
         new ActivationWindow(_license) { Owner = this }.ShowDialog();
     }
 
+    private void OnSearchTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) => Reload();
+
     private void Reload()
     {
-        EntriesList.ItemsSource = _store.Entries.Select(e => new EntryRow(e)).ToList();
+        var query = SearchBox?.Text ?? "";
+        var entries = string.IsNullOrWhiteSpace(query)
+            ? _store.Entries
+            : _store.Entries.Where(entry => entry.MatchesSearch(query)).ToList();
+        EntriesList.ItemsSource = entries.Select(e => new EntryRow(e)).ToList();
 
         var expiring = _store.ExpiringSoon();
         if (expiring.Count == 0)
