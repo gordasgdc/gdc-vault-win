@@ -15,13 +15,23 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <!-- BUG FIX 2026-08-27 (raportat de Cristi: "fereastra ramane
+             fixa, nu o pot deplasa/muta pe ecran"): FluentWindow inlocuieste
+             chrome-ul nativ Windows cu WindowChrome propriu si NU ofera
+             nicio zona de drag/butoane minimize-maximize-close fara un
+             <ui:TitleBar> explicit - lipsea complet din acest fisier de la
+             inceput (bug pre-existent, scos la iveala abia acum de primul
+             test real pe Windows, nu de o schimbare din aceasta sesiune). -->
+        <ui:TitleBar Grid.Row="0" Title="GDC Vault" Icon="pack://application:,,,/Assets/app.ico" />
 
         <!-- Banner de proba/licenta — vizibil mereu cat timp NU exista o
              licenta activa (LicenseManager.IsLicensed). NU blocheaza nimic
              singur — gating-ul real e pe butonul "+ Adauga aplicatie". -->
-        <Border Grid.Row="0" x:Name="TrialBanner" Background="#332A1A" Padding="14,6" Visibility="Collapsed">
+        <Border Grid.Row="1" x:Name="TrialBanner" Background="#332A1A" Padding="14,6" Visibility="Collapsed">
             <DockPanel>
                 <ui:Button Content="Donează 5€ pentru licență" Appearance="Transparent" Foreground="#E8963C"
                            DockPanel.Dock="Right" Click="OnActivateClicked" />
@@ -29,7 +39,7 @@
             </DockPanel>
         </Border>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280" MinWidth="220" MaxWidth="480" />
             <ColumnDefinition Width="4" />

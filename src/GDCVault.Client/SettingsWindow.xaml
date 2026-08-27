@@ -9,7 +9,17 @@
       setari") - tema System/Dark/Light explicita + acces direct la
       Ghidul de Utilizare PDF, altfel invizibil din UI-ul rulat.
     -->
-    <StackPanel Margin="20">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- BUG FIX 2026-08-27: FluentWindow fara <ui:TitleBar> nu poate fi
+             deplasata/mutata pe ecran (vezi MainWindow.xaml pentru detalii). -->
+        <ui:TitleBar Grid.Row="0" Title="Setări" ShowMaximize="False" ShowMinimize="False" CanMaximize="False" />
+
+    <StackPanel Grid.Row="1" Margin="20">
         <TextBlock Text="Setări" FontSize="20" FontWeight="Bold" Margin="0,0,0,16" />
 
         <ui:CardExpander Header="Aspect" IsExpanded="True" Margin="0,0,0,12">
@@ -31,4 +41,5 @@
 
         <ui:Button Content="Închide" HorizontalAlignment="Right" Click="OnCloseClicked" />
     </StackPanel>
+    </Grid>
 </ui:FluentWindow>
