@@ -374,6 +374,26 @@ nu existau pe Windows, la fel ca pe Mac înainte de fix. Adăugat:
   identic din `gdc-plugin-manager-win/CLAUDE.md`) — validare finală prin
   CI (`build-windows.yml`), obligatorie înainte de a declara gata.
 
+## Bug real 2026-08-27 (f) — Self-Updater real (fix-ul de link direct NU era suficient)
+Oglindă a etapei (e) din `GDCVault/CLAUDE.md` (Mac). Fix-ul anterior (e)
+(link direct spre asset) tot deschidea browserul — Cristi a semnalat cu
+screenshot că nu s-a schimbat nimic vizibil, cerând explicit paritate cu
+fluxul real deja dovedit în `GDCPluginManagerWin` (`SelfUpdater.cs`).
+Portat 1:1: `SelfUpdater.cs` (nou, `GDCVault.Client`) — descarcă
+`GDCVaultSetup.exe` cu `HttpClient` direct pe disc (redenumit cu versiunea,
+Regula 17), apoi `Process.Start(UseShellExecute:true)` — fereastra
+NATIVĂ Inno Setup apare, NICIODATĂ browserul. Nesilențios intenționat
+(fără `AppMutex`/`CloseApplications` în `installer.iss`, ca la
+GDCPluginManagerWin) — aplicația curentă se închide singură
+(`Application.Current.Shutdown()`) înainte ca userul să ajungă la pasul
+de copiere din wizard, iar `[Run] ... Flags: nowait postinstall
+skipifsilent` (deja existent) relansează aplicația după instalare.
+`UpdateProgressWindow.xaml(.cs)` (nou) — fereastră minimală de progres,
+`Window` simplu (NU `ui:FluentWindow` — tranzitorie, fără nevoie de
+`TitleBar`/drag). Butonul din popup devine „Actualizează acum”. Versiune
+→ `0.5.3` (PATCH), verificat prin CI Windows real (compilare — pasul de
+instalare efectiv, ca la Mac, cere confirmare manuală de la Cristi).
+
 ## Bug real 2026-08-27 (e) — "Descarcă" din popup-ul de update deschidea pagina GitHub, nu descărca
 Raportat de Cristi cu screenshot: apăsând "Descarcă" în popup-ul "Este
 disponibilă o versiune nouă", browserul deschidea
