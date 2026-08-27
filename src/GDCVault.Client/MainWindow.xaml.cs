@@ -15,6 +15,7 @@ public partial class MainWindow
     {
         InitializeComponent();
         _license.Changed += RefreshTrialBanner;
+        _license.Changed += RefreshProfileDisplay;
         RefreshTrialBanner();
         Reload();
         ShowEmptyState();
@@ -28,13 +29,32 @@ public partial class MainWindow
     }
 
     /// Profil Utilizator opțional in sidebar (vezi CLAUDE.md, Partea 1,
-    /// Regula 12) — port 1:1 al ProfileSidebarBlock.swift (Mac).
+    /// Regula 12) — port 1:1 al ProfileSidebarBlock.swift (Mac). Include
+    /// acum si Status Licenta/buton Activeaza (2026-08-27).
     private void RefreshProfileDisplay()
     {
         ProfileNameText.Text = UserProfileStore.Shared.DisplayName;
         ProfileEmailText.Text = UserProfileStore.Shared.Email;
         ProfileMachineIdText.Text = UserProfileStore.Shared.MachineId;
+
+        ActivateLicenseButton.Visibility = _license.IsLicensed ? Visibility.Collapsed : Visibility.Visible;
+        if (_license.IsLicensed)
+        {
+            var code = _license.SavedLicenseCode;
+            LicenseStatusText.Text = !string.IsNullOrEmpty(code) && code.Length > 14
+                ? $"…{code[^10..]}"
+                : (code ?? (_license.LicenseExpiresAt == 0 ? "Licențiat (perpetuu)" : "Licențiat"));
+        }
+        else
+        {
+            LicenseStatusText.Text = _license.IsTrialActive
+                ? $"Probă — {_license.TrialDaysRemaining}z rămase"
+                : "Probă expirată";
+        }
     }
+
+    private void OnCopyMachineIdClicked(object sender, RoutedEventArgs e) =>
+        Clipboard.SetText(UserProfileStore.Shared.MachineId);
 
     private void OnProfileClicked(object sender, RoutedEventArgs e)
     {
