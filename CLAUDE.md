@@ -374,6 +374,25 @@ nu existau pe Windows, la fel ca pe Mac înainte de fix. Adăugat:
   identic din `gdc-plugin-manager-win/CLAUDE.md`) — validare finală prin
   CI (`build-windows.yml`), obligatorie înainte de a declara gata.
 
+## Etapa 2026-08-27 — Paritate cu Mac: Asset-uri, Notițe, Profil, Splitter
+`VaultEntry.PurchasedAssets: List<PurchasedAsset>` (nume/cale folder/serie/
+link) — proprietate nouă cu `= new()`, JSON vechi fără câmp deserializează
+la listă goală, fără migrare. `EntryDetailControl` — `ItemsControl` legat
+la `ObservableCollection<PurchasedAsset>`, `Microsoft.Win32.OpenFolderDialog`
+(nativ .NET 8, disponibil cross-platform la compilare datorită
+`EnableWindowsTargeting`) pentru selectare folder + `Process.Start` pentru
+"Deschide Folder". `NotesBox` — `MinHeight=110`, scrollbar activat.
+`MainWindow.xaml` — `GridSplitter` nou între sidebar (`MinWidth=220`,
+`MaxWidth=480`) și panoul de detaliu (Mac are asta nativ prin
+`NavigationSplitView`, Windows nu avea echivalent). Profil sidebar —
+buton Copy Machine ID inline + status licență/`Activează`
+(`LicenseManager.SavedLicenseCode`, nou). Versiune → `0.3.0` (MINOR),
+sincronizată în `.csproj` + `installer.iss`. **Notă**: build local
+(`dotnet build`, inclusiv `Client` cu XAML) a reușit curat pe Mac de data
+asta (`EnableWindowsTargeting=true` permite acum compilare XAML→BAML
+cross-platform pe SDK-ul curent) — confirmare finală tot prin CI Windows
+real înainte de release, ca de obicei.
+
 ## Arhitectura fișei de produs (rescrisă 2026-08-24)
 
 Vezi `gdc-vault-mac/CLAUDE.md` pentru rationamentul complet. Aici:

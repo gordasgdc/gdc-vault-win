@@ -6,6 +6,18 @@ namespace GDCVault.Core.Models;
 /// Secretele (parolă, serial) sunt DOUĂ sloturi independente în DPAPI
 /// (vezi VaultDpapiStore.SecretSlot) — un produs poate avea ambele, una
 /// singură, sau niciuna.
+/// Asset/pachet cumpărat de la un furnizor (efecte, SFX, LUT-uri), legat de
+/// un folder local — oglinda PurchasedAsset (Mac). Listă dinamică pe
+/// VaultEntry.PurchasedAssets (un produs poate avea mai multe).
+public sealed class PurchasedAsset
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; } = "";
+    public string? FolderPath { get; set; }
+    public string? LicenseKey { get; set; }
+    public string? DownloadUrl { get; set; }
+}
+
 public sealed class VaultEntry
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -26,6 +38,11 @@ public sealed class VaultEntry
     public string? UpdateUrl { get; set; }
     public string? Notes { get; set; }
     public List<AttachmentRef> Attachments { get; set; } = new();
+
+    // Asset-uri cumpărate & foldere locale (2026-08-27). Câmp nou — lipsă în
+    // JSON vechi (entries.json) deserializează la default `= new()`, deci
+    // intrările existente rămân valide fără migrare.
+    public List<PurchasedAsset> PurchasedAssets { get; set; } = new();
 
     /// Zile pana la expirare; negativ daca a expirat deja. null = nu expira.
     public int? DaysUntilExpiry

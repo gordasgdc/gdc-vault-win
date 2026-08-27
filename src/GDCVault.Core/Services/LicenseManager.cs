@@ -54,6 +54,17 @@ public sealed class LicenseManager
         File.WriteAllText(path, _trialStart.ToUnixTimeSeconds().ToString());
     }
 
+    /// Doar pentru afisare compacta (Profil sidebar) — codul salvat, daca
+    /// exista. Nu valideaza nimic aici, doar citeste fisierul.
+    public string? SavedLicenseCode
+    {
+        get
+        {
+            var path = ActivationFilePath;
+            return File.Exists(path) ? File.ReadAllText(path).Trim() : null;
+        }
+    }
+
     /// Zile intregi ramase din proba, rotunjit in sus.
     public int TrialDaysRemaining
     {

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -17,6 +18,7 @@ public partial class EntryDetailControl : UserControl
     private readonly Guid _entryId;
     private readonly bool _isNew;
     private List<AttachmentRef> _attachments;
+    private readonly ObservableCollection<PurchasedAsset> _assets;
 
     // PITFALL FIXED 2026-08-24 (bug critic de UX): PasswordBox NU poate fi
     // legat prin binding (WPF il interzice intentionat, motiv de
@@ -39,6 +41,8 @@ public partial class EntryDetailControl : UserControl
         _isNew = isNew;
         _entryId = initialEntry.Id;
         _attachments = new List<AttachmentRef>(initialEntry.Attachments);
+        _assets = new ObservableCollection<PurchasedAsset>(initialEntry.PurchasedAssets);
+        AssetsItemsControl.ItemsSource = _assets;
 
         NameBox.Text = initialEntry.Name;
         LoginUrlBox.Text = initialEntry.LoginUrl ?? "";
@@ -169,6 +173,34 @@ public partial class EntryDetailControl : UserControl
         }
     }
 
+    private void OnAddAssetClicked(object sender, RoutedEventArgs e) => _assets.Add(new PurchasedAsset());
+
+    private void OnRemoveAssetClicked(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is PurchasedAsset asset) _assets.Remove(asset);
+    }
+
+    /// `Microsoft.Win32.OpenFolderDialog` — disponibil nativ din .NET 8
+    /// pentru WPF, oglinda NSOpenPanel(canChooseDirectories) de pe Mac.
+    private void OnPickAssetFolderClicked(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is not PurchasedAsset asset) return;
+        var dialog = new OpenFolderDialog { Title = "Alege folderul local unde ai salvat acest asset/pachet." };
+        if (dialog.ShowDialog() != true) return;
+        asset.FolderPath = dialog.FolderName;
+
+        // ItemsControl-ul nu are ObservableObject pe PurchasedAsset — fortam
+        // refresh vizual simplu, reasignand sursa (colectia ramane aceeasi).
+        AssetsItemsControl.Items.Refresh();
+    }
+
+    private void OnOpenAssetFolderClicked(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is not PurchasedAsset asset) return;
+        if (string.IsNullOrEmpty(asset.FolderPath) || !Directory.Exists(asset.FolderPath)) return;
+        Process.Start(new ProcessStartInfo(asset.FolderPath) { UseShellExecute = true });
+    }
+
     private void OnCancelClicked(object sender, RoutedEventArgs e) => CanceledNew?.Invoke();
 
     private void OnDeleteClicked(object sender, RoutedEventArgs e)
@@ -194,7 +226,8 @@ public partial class EntryDetailControl : UserControl
             DownloadUrl = string.IsNullOrEmpty(DownloadUrlBox.Text) ? null : DownloadUrlBox.Text,
             UpdateUrl = string.IsNullOrEmpty(UpdateUrlBox.Text) ? null : UpdateUrlBox.Text,
             Notes = string.IsNullOrEmpty(NotesBox.Text) ? null : NotesBox.Text,
-            Attachments = _attachments
+            Attachments = _attachments,
+            PurchasedAssets = _assets.ToList()
         };
 
         // Camp gol la Salveaza = "fara secret" - semantica directa (ce vezi
