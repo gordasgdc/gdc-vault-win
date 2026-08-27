@@ -13,7 +13,7 @@
     <RootNamespace>GDCVault.Client</RootNamespace>
     <AssemblyName>GDCVault</AssemblyName>
     <!-- Acelasi numar de versiune ca varianta Mac, la fel ca GDCPluginManager. -->
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <!-- Iconita exe-ului (Assets\app.ico - generata din acelasi master 1024px
          ca AppIcon.icns de pe Mac, ca cei doi clienti sa aiba acelasi logo:
          seif stilizat, neon cyan/violet pe ardezie). -->

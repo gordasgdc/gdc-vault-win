@@ -374,6 +374,21 @@ nu existau pe Windows, la fel ca pe Mac înainte de fix. Adăugat:
   identic din `gdc-plugin-manager-win/CLAUDE.md`) — validare finală prin
   CI (`build-windows.yml`), obligatorie înainte de a declara gata.
 
+## Etapa 2026-08-27 (b) — Bara de căutare fuzzy globală
+`FuzzySearch.cs` (nou, `GDCVault.Core.Services`) — oglinda `FuzzySearch.swift`
+(Mac): substring direct, apoi subsecvență de caractere în ordine, insensibil
+la majuscule/diacritice (`NormalizationForm.FormD` + eliminare
+`NonSpacingMark`)/spații. `VaultEntry.MatchesSearch(string)` (extension
+method) caută în Nume, URL login, Notițe, Resurse și toate asset-urile
+cumpărate — aceleași câmpuri ca Mac, aceeași excludere a secretelor DPAPI
+reale. UI: `ui:TextBox` simplu (nu `AutoSuggestBox` — semnătura ei de
+`TextChanged` e ambiguă fără sursă Wpf.Ui la îndemână, riscul exact
+documentat în pitfall-ul `Symbol="Phone24"`; `ui:TextBox` extinde direct
+`TextBox`, deci `TextChangedEventArgs` standard, fără presupuneri) +
+glyph 🔍, deasupra listei din `MainWindow`. `Reload()` filtrează acum prin
+`MatchesSearch` înainte de populare. Versiune → `0.4.0` (MINOR), verificat
+prin CI Windows real.
+
 ## Etapa 2026-08-27 — Paritate cu Mac: Asset-uri, Notițe, Profil, Splitter
 `VaultEntry.PurchasedAssets: List<PurchasedAsset>` (nume/cale folder/serie/
 link) — proprietate nouă cu `= new()`, JSON vechi fără câmp deserializează
