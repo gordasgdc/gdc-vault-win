@@ -11,9 +11,22 @@ public partial class MainWindow
     private readonly LicenseManager _license = LicenseManager.Shared;
     private VaultEntry? _draftEntry; // non-null cat timp se completeaza o intrare noua, inca nesalvata
 
+    /// Setare "Marime Text" (Regula 24) - LayoutTransform pe RootGrid,
+    /// nu RenderTransform: LayoutTransform participa la calculul de
+    /// layout, deci restul ferestrei se reflow-eaza corect in jurul
+    /// continutului scalat, nu doar il deseneaza mai mare peste vecini.
+    public void ApplyTextScale(TextScalePreference preference)
+    {
+        var scale = preference.ScaleFactor();
+        RootGrid.LayoutTransform = scale == 1.0
+            ? System.Windows.Media.Transform.Identity
+            : new System.Windows.Media.ScaleTransform(scale, scale);
+    }
+
     public MainWindow()
     {
         InitializeComponent();
+        ApplyTextScale(TextScaleStore.Load());
         _license.Changed += RefreshTrialBanner;
         _license.Changed += RefreshProfileDisplay;
         RefreshTrialBanner();

@@ -1,5 +1,11 @@
 # Changelog — GDC Vault (Windows)
 
+## v0.6.0 (2026-08-29)
+- **Setare explicită "Mărime Text"** (Mic/Normal/Mare/Foarte mare, Regula 24
+  — lipsea, adăugat standard după ultima actualizare a acestui repo) — în
+  fereastra de Setări, alături de tema. `LayoutTransform` pe `RootGrid`,
+  persistat local, aplicat instant fără repornire.
+
 ## v0.2.2 (2026-08-26)
 **Completare obligatorie, Directivă Permanentă Supremă — lipsea complet:**
 - **Versiune vizibilă în UI**: `v0.2.2` afișat acum în footer-ul sidebar-ului.
