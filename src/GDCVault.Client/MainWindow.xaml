@@ -12,7 +12,11 @@
       produsului selectat in dreapta. Vezi ContentView.swift (Mac) pentru
       oglinda SwiftUI a aceleiasi structuri.
     -->
-    <Grid>
+    <!-- x:Name RootGrid (Regula 24) - tinta lui ApplyTextScale() din
+         code-behind: LayoutTransform aplicat aici scaleaza UNIFORM tot
+         continutul ferestrei, fara sa umblam prin fiecare FontSize
+         hardcodat din XAML. -->
+    <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
