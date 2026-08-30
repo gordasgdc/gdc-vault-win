@@ -15,7 +15,7 @@
 ;   4. Rezultatul apare in Output\GDCVaultSetup.exe
 
 #define MyAppName "GDC Vault"
-#define MyAppVersion "0.6.1"
+#define MyAppVersion "0.6.2"
 #define MyAppPublisher "Cristi Gordas"
 #define MyAppExeName "GDCVault.exe"
 #define MyAppURL "https://gordas.dev/gdc-vault"
@@ -38,6 +38,7 @@ WizardStyle=modern
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 SetupIconFile=src\GDCVault.Client\Assets\app.ico
+LicenseFile=installer\license.txt
 ; Nu semnat cu certificat platit — Windows SmartScreen arata un
 ; avertisment "Unrecognized app" la prima rulare a instalatorului.
 ; Normal pentru distributie indie (aceeasi nota ca la GDCPluginManagerWin

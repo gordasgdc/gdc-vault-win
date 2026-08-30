@@ -1,0 +1,31 @@
+TERMENI ȘI CONDIȚII — GDC Vault
+
+GDC Vault este dezvoltată de Cristi Gordas, ca dezvoltator independent
+("GDC"), fără afiliere la vreo companie terță.
+
+LICENȚĂ: personală, netransmisibilă, legată de Machine ID-ul
+calculatorului tău, pentru instalare și utilizare pe uz propriu sau
+profesional.
+
+PERIOADĂ DE PROBĂ: 15 zile gratuite, acces complet. După expirare, poți
+vizualiza și exporta datele existente, dar adăugarea de intrări noi
+necesită o licență activă.
+
+LICENȚĂ LIFETIME: se obține printr-o donație unică (5€, preț promoțional
+de lansare), contactând Dezvoltatorul prin WhatsApp (detalii în
+aplicație, ecranul de Activare). Codul de licență e personal — nu-l
+distribui public.
+
+FĂRĂ GARANȚIE: Aplicația este oferită "ca atare" ("as is"), fără nicio
+garanție explicită sau implicită. Dezvoltatorul nu răspunde pentru
+pierderi directe sau indirecte rezultate din utilizarea sau
+imposibilitatea utilizării Aplicației.
+
+DATE: parolele/cheile sunt stocate exclusiv local (Windows Credential
+Manager), niciodată în clar pe disc, niciodată transmise către server.
+Fără telemetrie, fără colectare de date — singura excepție e verificarea
+manuală de update, care interoghează numărul ultimei versiuni de pe
+GitHub.
+
+Prin bifarea căsuței de acceptare din acest instalator, confirmi că ai
+citit și ești de acord cu acești termeni.

@@ -1,5 +1,11 @@
 # Changelog — GDC Vault (Windows)
 
+## v0.6.2 (2026-08-30)
+- **`LicenseFile` lipsea din installer** (Regula 19) — adăugat
+  `installer/license.txt` + `LicenseFile=installer\license.txt` în
+  `[Setup]`; Inno Setup arată acum nativ pagina "I accept the
+  agreement"/"I do not accept", Next dezactivat până la acceptare.
+
 ## v0.6.1 (2026-08-29)
 - **Ghidul PDF redesenat**: copertă cu banner de brand (amber), 3 capturi
   reale ale clientului WPF (fereastra principală, adăugare aplicație,
