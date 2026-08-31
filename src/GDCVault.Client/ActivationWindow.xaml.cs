@@ -26,9 +26,12 @@ public partial class ActivationWindow
         CopyButton.Content = "Copiat";
     }
 
+    // Preț dinamic (Regula 27) - vezi PricingChecker. Fail-open pe 5 €
+    // (valoarea hardcodata anterior) daca pricing.json nu e accesibil.
     private void OnWhatsAppClicked(object sender, RoutedEventArgs e)
     {
-        var text = $"Bună, vreau să donez 5€ pentru licența GDC Vault. ID calculator: {MachineID.Display}";
+        var priceText = PricingChecker.Shared.DisplayText;
+        var text = $"Bună, vreau să donez {priceText} pentru licența GDC Vault. ID calculator: {MachineID.Display}";
         Process.Start(new ProcessStartInfo(WhatsAppLink.Url(text)) { UseShellExecute = true });
     }
 
