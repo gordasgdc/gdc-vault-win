@@ -18,6 +18,24 @@ public partial class ActivationWindow
         InitializeComponent();
         _license = license;
         MachineIdText.Text = MachineID.Display;
+        RefreshPricingText();
+        PricingChecker.Shared.PropertyChanged += (_, _) => Dispatcher.Invoke(RefreshPricingText);
+    }
+
+    // Preț dinamic (Regula 27) - vezi PricingChecker. Fail-open pe 5 €
+    // (valoarea hardcodata anterior) daca pricing.json nu e accesibil.
+    private void RefreshPricingText()
+    {
+        var pricing = PricingChecker.Shared;
+        PricingText.Text = pricing.ActivePromo is { } promo
+            ? $"🔥 {promo.Label}: {FormatPrice(promo.Price)} (în loc de {FormatPrice(pricing.BasePrice)}) — Licență Lifetime, donație unică, nu un preț de listă."
+            : $"Licență Lifetime — {FormatPrice(pricing.EffectivePrice)} donație unică, nu un preț de listă. Mă ajută să acopăr costurile de dezvoltare. Ofertă valabilă în faza de dezvoltare/beta; crește după obținerea certificatelor oficiale de semnare Apple/Windows.";
+    }
+
+    private static string FormatPrice(double value)
+    {
+        var isWhole = value % 1 == 0;
+        return $"{(isWhole ? ((long)value).ToString() : value.ToString())}€";
     }
 
     private void OnCopyClicked(object sender, RoutedEventArgs e)
