@@ -1,5 +1,11 @@
 # Changelog — GDC Vault (Windows)
 
+## v0.6.4 (2026-08-31) — Bannerul și textul de licență arătau suma veche fixă
+Bannerul de sus și textul din fereastra de Activare mai arătau 5€
+hardcodat, deși mesajul WhatsApp (v0.6.3) deja citea prețul dinamic din
+`pricing.json` — nu erau sincronizate. Acum ambele citesc `PricingChecker`
+și arată eticheta ofertei active (ex. "🔥 Ofertă lansare: Donează 9€").
+
 ## v0.6.3 (2026-08-31) — Preț dinamic din Furnizor
 Suma de donație din mesajul WhatsApp de activare se citește acum din
 `pricing.json` (Furnizor), nu mai e fixă în cod — orice ofertă programată

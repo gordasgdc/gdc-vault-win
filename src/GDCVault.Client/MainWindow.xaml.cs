@@ -29,6 +29,7 @@ public partial class MainWindow
         ApplyTextScale(TextScaleStore.Load());
         _license.Changed += RefreshTrialBanner;
         _license.Changed += RefreshProfileDisplay;
+        PricingChecker.Shared.PropertyChanged += (_, _) => RefreshTrialBanner();
         RefreshTrialBanner();
         Reload();
         ShowEmptyState();
@@ -137,6 +138,17 @@ public partial class MainWindow
         TrialBannerText.Text = _license.IsTrialActive
             ? $"Probă gratuită — {_license.TrialDaysRemaining} zile rămase"
             : "Proba a expirat — poți vizualiza și exporta datele existente";
+
+        var pricing = PricingChecker.Shared;
+        DonateButton.Content = pricing.ActivePromo is { } promo
+            ? $"🔥 {promo.Label}: Donează {FormatPrice(promo.Price)} pentru licență"
+            : $"Donează {FormatPrice(pricing.EffectivePrice)} pentru licență";
+    }
+
+    private static string FormatPrice(double value)
+    {
+        var isWhole = value % 1 == 0;
+        return $"{(isWhole ? ((long)value).ToString() : value.ToString())}€";
     }
 
     private void OnActivateClicked(object sender, RoutedEventArgs e)
