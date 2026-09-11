@@ -1123,3 +1123,16 @@ Port 1:1 al infrastructurii Mac: `SupabaseConfig.cs`/`AnalyticsClient.cs`/
 `RevocationCheck.cs`/`UserProfileStore.cs` (Core, noi), bloc Profil în
 sidebar (`MainWindow.xaml`) + `ProfileEditWindow.xaml(.cs)` (nou, port al
 `PasswordPromptWindow`). Verificat prin CI real — success.
+
+## Etapa 2026-09-11 — v0.6.5 publicat cu semnare Windows activa
+
+Secretele CI (`WIN_SELFSIGN_PFX_BASE64`/`WIN_SELFSIGN_PFX_PASSWORD`,
+certificat COMUN ecosistemului) erau deja incarcate de Cristi. Acest release
+e primul in care semnarea Regulii 34 chiar a rulat pe un build real.
+
+Verificat direct, nu presupus: pasul de semnare marcat OK in lista de pasi a
+job-ului, plus directorul de securitate din header-ul PE al installer-ului
+descarcat = 7496 bytes de semnatura Authenticode. Link stabil
+`releases/latest/download/...` verificat HTTP 200.
+
+Release creat manual din artefactul CI (repo fara automatizare de release).
