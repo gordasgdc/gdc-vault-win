@@ -35,11 +35,11 @@
         <!-- Banner de proba/licenta — vizibil mereu cat timp NU exista o
              licenta activa (LicenseManager.IsLicensed). NU blocheaza nimic
              singur — gating-ul real e pe butonul "+ Adauga aplicatie". -->
-        <Border Grid.Row="1" x:Name="TrialBanner" Background="#332A1A" Padding="14,6" Visibility="Collapsed">
+        <Border Grid.Row="1" x:Name="TrialBanner" Background="{DynamicResource TrialBannerSurfaceBrush}" Padding="14,6" Visibility="Collapsed">
             <DockPanel>
-                <ui:Button x:Name="DonateButton" Content="Donează pentru licență" Appearance="Transparent" Foreground="#E8963C"
+                <ui:Button x:Name="DonateButton" Content="Donează pentru licență" Appearance="Transparent" Foreground="{DynamicResource DonateAccentBrush}"
                            DockPanel.Dock="Right" Click="OnActivateClicked" />
-                <TextBlock x:Name="TrialBannerText" FontSize="11" Foreground="Gray" VerticalAlignment="Center" />
+                <TextBlock x:Name="TrialBannerText" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
             </DockPanel>
         </Border>
 
@@ -83,9 +83,9 @@
                 </DockPanel>
             </StackPanel>
 
-            <Border Grid.Row="1" x:Name="ExpiringBanner" Background="#332E1A" CornerRadius="6"
+            <Border Grid.Row="1" x:Name="ExpiringBanner" Background="{DynamicResource ExpiringBannerSurfaceBrush}" CornerRadius="6"
                     Padding="10" Margin="14,0,14,10" Visibility="Collapsed">
-                <TextBlock x:Name="ExpiringBannerText" TextWrapping="Wrap" Foreground="#FFC060" FontSize="12" />
+                <TextBlock x:Name="ExpiringBannerText" TextWrapping="Wrap" Foreground="{DynamicResource StatusWarningBrush}" FontSize="12" />
             </Border>
 
             <ListView Grid.Row="2" x:Name="EntriesList" BorderThickness="0"
@@ -94,7 +94,7 @@
                     <DataTemplate>
                         <StackPanel Margin="4">
                             <TextBlock Text="{Binding Name}" FontWeight="Medium" />
-                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="Gray" />
+                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -109,21 +109,21 @@
                         HorizontalContentAlignment="Left" Padding="0" HorizontalAlignment="Stretch">
                     <StackPanel>
                         <TextBlock x:Name="ProfileNameText" FontSize="11" FontWeight="Medium" />
-                        <TextBlock x:Name="ProfileEmailText" FontSize="10" Foreground="Gray" />
+                        <TextBlock x:Name="ProfileEmailText" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
                 </Button>
                 <DockPanel Margin="0,2,0,0">
                     <ui:Button x:Name="CopyMachineIdButton" DockPanel.Dock="Right" Content="⧉" FontSize="9"
                                Padding="4,0" Appearance="Transparent" Click="OnCopyMachineIdClicked"
                                ToolTip="Copiază Machine ID" />
-                    <TextBlock x:Name="ProfileMachineIdText" FontSize="9.5" Foreground="Gray" FontFamily="Consolas"
+                    <TextBlock x:Name="ProfileMachineIdText" FontSize="9.5" Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="Consolas"
                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                 </DockPanel>
                 <DockPanel Margin="0,2,0,0">
                     <ui:Button x:Name="ActivateLicenseButton" DockPanel.Dock="Right" Content="Activează" FontSize="9.5"
-                               Padding="4,0" Appearance="Transparent" Foreground="#4CAF50" Click="OnActivateClicked"
+                               Padding="4,0" Appearance="Transparent" Foreground="{DynamicResource StatusSuccessBrush}" Click="OnActivateClicked"
                                Visibility="Collapsed" />
-                    <TextBlock x:Name="LicenseStatusText" FontSize="9.5" Foreground="Gray"
+                    <TextBlock x:Name="LicenseStatusText" FontSize="9.5" Foreground="{DynamicResource TextSecondaryBrush}"
                                VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                 </DockPanel>
             </StackPanel>
@@ -133,7 +133,7 @@
                  Permanenta Suprema (vezi CLAUDE.md). -->
             <DockPanel Grid.Row="4" Margin="14,8,14,10">
                 <TextBlock x:Name="VersionText" DockPanel.Dock="Left" FontSize="10.5"
-                           Foreground="Gray" VerticalAlignment="Center" />
+                           Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
                 <ui:Button DockPanel.Dock="Right" Content="⚙" Appearance="Transparent" Padding="4,0"
                            FontSize="11" Click="OnSettingsClicked" ToolTip="Setări" />
                 <ui:Button DockPanel.Dock="Right" Content="Caută actualizări" Appearance="Transparent"
@@ -151,7 +151,7 @@
         <Grid Grid.Column="2">
             <ContentControl x:Name="DetailHost" />
             <TextBlock x:Name="EmptyStateText" Text="Selectează o aplicație din stânga, sau adaugă una nouă."
-                       HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" />
+                       HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
         </Grid>
         </Grid>
     </Grid>

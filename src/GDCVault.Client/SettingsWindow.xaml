@@ -24,7 +24,7 @@
 
         <ui:CardExpander Header="Aspect" IsExpanded="True" Margin="0,0,0,12">
             <StackPanel Margin="4">
-                <TextBlock Text="Temă" Margin="0,0,0,6" FontSize="11" Foreground="Gray" />
+                <TextBlock Text="Temă" Margin="0,0,0,6" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
                 <RadioButton x:Name="ThemeSystemRadio" Content="Sistem" GroupName="Theme" Margin="0,0,0,4" Checked="OnThemeChanged" />
                 <RadioButton x:Name="ThemeLightRadio" Content="Light" GroupName="Theme" Margin="0,0,0,4" Checked="OnThemeChanged" />
                 <RadioButton x:Name="ThemeDarkRadio" Content="Dark" GroupName="Theme" Checked="OnThemeChanged" />
@@ -45,7 +45,7 @@
         <ui:CardExpander Header="Ajutor" IsExpanded="True" Margin="0,0,0,16">
             <StackPanel Margin="4">
                 <TextBlock Text="Ghid de utilizare complet — instalare, licențiere, export/import, asset-uri cumpărate — în Română, English și Español."
-                           TextWrapping="Wrap" FontSize="11" Foreground="Gray" Margin="0,0,0,8" />
+                           TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,8" />
                 <ui:Button Content="Deschide Ghidul de Utilizare (PDF)" Click="OnOpenHelpClicked" />
             </StackPanel>
         </ui:CardExpander>

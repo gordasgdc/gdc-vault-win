@@ -13,11 +13,11 @@
         </Grid.RowDefinitions>
         <ui:TitleBar Grid.Row="0" Title="Profil utilizator (opțional)" ShowMaximize="False" ShowMinimize="False" CanMaximize="False" />
     <StackPanel Grid.Row="1" Margin="16">
-        <TextBlock Text="Nume" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
+        <TextBlock Text="Nume" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4" />
         <TextBox x:Name="NameBox" Margin="0,0,0,10" />
-        <TextBlock Text="Email" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
+        <TextBlock Text="Email" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4" />
         <TextBox x:Name="EmailBox" Margin="0,0,0,10" />
-        <TextBlock Text="ID mașină" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
+        <TextBlock Text="ID mașină" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4" />
         <TextBox x:Name="MachineIdBox" IsReadOnly="True" Margin="0,0,0,16" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <ui:Button Content="Anulează" Click="OnCancelClicked" Margin="0,0,8,0" />

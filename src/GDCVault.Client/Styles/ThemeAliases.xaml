@@ -1,0 +1,55 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Regula 37. Textul secundar și fundalurile urmează TEMA (culorile se iau
+        prin DynamicResource din tema WPF-UI, deci se schimbă singure la
+        comutare). Culorile de stare rămân fixe intenționat — un avertisment e
+        chihlimbariu în ambele teme — dar definite o singură dată, nu repetate
+        pe fiecare control.
+    -->
+
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{DynamicResource TextFillColorPrimary}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{DynamicResource TextFillColorSecondary}" />
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{DynamicResource ApplicationBackgroundColor}" />
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{DynamicResource CardBackgroundFillColorDefault}" />
+
+    <!-- Gri explicit pentru starea dezactivată, cu Opacity=1: estomparea
+         implicită a WPF face textul deja gri invizibil pe fundal închis. -->
+    <SolidColorBrush x:Key="TextDisabledBrush" Color="#8E8E93" />
+
+    <!-- Stări (fixe în ambele teme, definite o singură dată) -->
+    <SolidColorBrush x:Key="TrialBannerSurfaceBrush" Color="#332A1A" />
+    <SolidColorBrush x:Key="ExpiringBannerSurfaceBrush" Color="#332E1A" />
+    <SolidColorBrush x:Key="StatusWarningBrush" Color="#FFC060" />
+    <SolidColorBrush x:Key="DonateAccentBrush" Color="#E8963C" />
+    <SolidColorBrush x:Key="StatusSuccessBrush" Color="#4CAF50" />
+    <!-- Roșu de eroare deschis la ton, nu `Red` pur: roșul saturat pe fundal
+         închis are contrast slab și „vibrează" vizual. Singura schimbare de
+         randare din acest lot — restul culorilor și-au păstrat valorile. -->
+    <SolidColorBrush x:Key="StatusErrorBrush" Color="#E0605E" />
+    <!-- Voal alb foarte slab peste un fundal: separă un rând fără o bordură
+         desenată. Funcționează pe orice temă fiindcă e translucid. -->
+    <SolidColorBrush x:Key="SubtleOverlayBrush" Color="#14FFFFFF" />
+
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}" />
+                <Setter Property="Opacity" Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}" />
+                <Setter Property="Opacity" Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

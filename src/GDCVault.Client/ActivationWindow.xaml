@@ -15,18 +15,18 @@
     <StackPanel Grid.Row="1" Margin="20">
         <TextBlock Text="Activează licența GDC Vault" FontSize="18" FontWeight="Bold" Margin="0,0,0,14" />
 
-        <TextBlock Text="ID calculator" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
+        <TextBlock Text="ID calculator" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4" />
         <DockPanel Margin="0,0,0,14">
             <ui:Button x:Name="CopyButton" Content="Copiază" DockPanel.Dock="Right" Click="OnCopyClicked" />
             <TextBlock x:Name="MachineIdText" FontFamily="Consolas" VerticalAlignment="Center" Margin="0,0,8,0" />
         </DockPanel>
 
-        <TextBlock Text="Cod de activare" FontSize="11" Foreground="Gray" Margin="0,0,0,4" />
+        <TextBlock Text="Cod de activare" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,4" />
         <ui:TextBox x:Name="CodeBox" Margin="0,0,0,10" />
 
-        <TextBlock x:Name="ErrorText" Foreground="Red" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="Collapsed" />
+        <TextBlock x:Name="ErrorText" Foreground="{DynamicResource StatusErrorBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,10" Visibility="Collapsed" />
 
-        <TextBlock x:Name="PricingText" TextWrapping="Wrap" FontSize="11" Foreground="Gray" Margin="0,0,0,14" />
+        <TextBlock x:Name="PricingText" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,14" />
 
         <ui:Button Content="Donează prin WhatsApp" Click="OnWhatsAppClicked" Margin="0,0,0,16" />
 
