@@ -1,5 +1,15 @@
 # Changelog — GDC Vault (Windows)
 
+## v0.6.6 (2026-09-14) — Contrast si teme
+
+### Fixed
+- Textul secundar se adapteaza acum la tema aleasa: pe tema deschisa nu mai
+  ramane gri-pe-alb, iar pe cea inchisa se citeste clar.
+- Mesajele de eroare din fereastra de activare folosesc un rosu lizibil pe
+  fundal inchis, in loc de rosu saturat.
+- Campurile si butoanele dezactivate raman vizibile in loc sa se estompeze
+  pana la disparitie.
+
 ## v0.6.4 (2026-08-31) — Bannerul și textul de licență arătau suma veche fixă
 Bannerul de sus și textul din fereastra de Activare mai arătau 5€
 hardcodat, deși mesajul WhatsApp (v0.6.3) deja citea prețul dinamic din
