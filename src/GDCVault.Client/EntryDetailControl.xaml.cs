@@ -1,3 +1,4 @@
+using GDCVault.Client.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -89,6 +90,17 @@ public partial class EntryDetailControl : UserControl
 
         HasExpiryCheck.IsChecked = initialEntry.ExpiresAt is not null;
         ExpiryPicker.SelectedDate = initialEntry.ExpiresAt?.DateTime ?? DateTime.Today;
+
+        ReminderCheck.IsChecked = initialEntry.ReminderEnabled;
+        Remind30.IsChecked = initialEntry.ReminderDaysBefore.Contains(30);
+        Remind7.IsChecked = initialEntry.ReminderDaysBefore.Contains(7);
+        Remind3.IsChecked = initialEntry.ReminderDaysBefore.Contains(3);
+
+        BillingPeriodCombo.ItemsSource = new object?[] { null, BillingPeriod.Monthly, BillingPeriod.Yearly };
+        BillingPeriodCombo.SelectedItem = initialEntry.BillingPeriod;
+        PriceBox.Text = initialEntry.PriceAmount is { } amount
+            ? (Math.Abs(amount % 1) < 0.0001 ? ((long)amount).ToString() : amount.ToString("0.00"))
+            : "";
         DownloadUrlBox.Text = initialEntry.DownloadUrl ?? "";
         UpdateUrlBox.Text = initialEntry.UpdateUrl ?? "";
         NotesBox.Text = initialEntry.Notes ?? "";
@@ -150,7 +162,11 @@ public partial class EntryDetailControl : UserControl
     }
 
     private void OnExpiryToggled(object sender, RoutedEventArgs e) => UpdateExpiryEnabled();
-    private void UpdateExpiryEnabled() => ExpiryPicker.IsEnabled = HasExpiryCheck.IsChecked == true;
+    private void UpdateExpiryEnabled()
+    {
+        ExpiryPicker.IsEnabled = HasExpiryCheck.IsChecked == true;
+        UpdateReminderEnabled();
+    }
 
     private void RefreshAttachmentsList()
     {
@@ -255,6 +271,12 @@ public partial class EntryDetailControl : UserControl
             Username = string.IsNullOrEmpty(UsernameBox.Text) ? null : UsernameBox.Text,
             LicenseType = (LicenseType)(LicenseTypeCombo.SelectedValue ?? LicenseType.None),
             ExpiresAt = HasExpiryCheck.IsChecked == true ? ExpiryPicker.SelectedDate : null,
+            PriceAmount = ParsedPrice(),
+            BillingPeriod = ParsedPrice() is null
+                ? null
+                : (BillingPeriodCombo.SelectedItem as BillingPeriod? ?? BillingPeriod.Monthly),
+            ReminderEnabled = HasExpiryCheck.IsChecked == true && ReminderCheck.IsChecked == true,
+            ReminderDaysBefore = SelectedReminderDays(),
             DownloadUrl = string.IsNullOrEmpty(DownloadUrlBox.Text) ? null : DownloadUrlBox.Text,
             UpdateUrl = string.IsNullOrEmpty(UpdateUrlBox.Text) ? null : UpdateUrlBox.Text,
             Notes = string.IsNullOrEmpty(NotesBox.Text) ? null : NotesBox.Text,
@@ -314,5 +336,97 @@ public partial class EntryDetailControl : UserControl
 
         _store.Upsert(entry);
         Saved?.Invoke(entry);
+    }
+
+    // ─── v0.7.0: linkuri, copiere, remindere, cost ───────────────────────
+
+    /// Butonul de lansare se activeaza doar cand adresa chiar poate fi
+    /// deschisa — un buton activ care nu face nimic e mai rau decat unul gri.
+    private void OnUrlTextChanged(object sender, TextChangedEventArgs e) => RefreshLaunchButtons();
+
+    private void RefreshLaunchButtons()
+    {
+        if (LoginUrlBoxLaunchButton is null) return;   // apelat si in timpul InitializeComponent
+        LoginUrlBoxLaunchButton.IsEnabled = VaultEntry.IsLaunchableUrl(LoginUrlBox.Text);
+        DownloadUrlBoxLaunchButton.IsEnabled = VaultEntry.IsLaunchableUrl(DownloadUrlBox.Text);
+        UpdateUrlBoxLaunchButton.IsEnabled = VaultEntry.IsLaunchableUrl(UpdateUrlBox.Text);
+    }
+
+    private void OnLaunchUrlClicked(object sender, RoutedEventArgs e)
+    {
+        var text = (sender as FrameworkElement)?.Tag as System.Windows.Controls.TextBox;
+        UrlLauncher.Launch(text?.Text);
+    }
+
+    private void OnCopyUsernameClicked(object sender, RoutedEventArgs e)
+        => SecureClipboard.Copy(UsernameBox.Text);
+
+    private void OnGeneratePasswordClicked(object sender, RoutedEventArgs e)
+    {
+        var generated = PasswordGenerator.Generate();
+        _passwordValue = generated;
+        PasswordBox.Password = generated;
+        PasswordRevealBox.Text = generated;
+        // O parola pe care n-o vezi nu poate fi verificata.
+        if (PasswordRevealBox.Visibility != Visibility.Visible) OnTogglePasswordReveal(sender, e);
+    }
+
+    private void OnReminderToggled(object sender, RoutedEventArgs e) => UpdateReminderEnabled();
+
+    private void UpdateReminderEnabled()
+    {
+        if (ReminderDaysPanel is null) return;
+        ReminderDaysPanel.IsEnabled = HasExpiryCheck.IsChecked == true && ReminderCheck.IsChecked == true;
+    }
+
+    private List<int> SelectedReminderDays()
+    {
+        var days = new List<int>();
+        if (Remind30.IsChecked == true) days.Add(30);
+        if (Remind7.IsChecked == true) days.Add(7);
+        if (Remind3.IsChecked == true) days.Add(3);
+        return days.Count > 0 ? days : new List<int> { 30, 7, 3 };
+    }
+
+    /// Virgula zecimala, cum o tasteaza un utilizator roman, nu doar punctul.
+    private double? ParsedPrice()
+    {
+        var raw = PriceBox.Text?.Replace(',', '.').Trim();
+        if (string.IsNullOrEmpty(raw)) return null;
+        return double.TryParse(raw, System.Globalization.NumberStyles.Any,
+                               System.Globalization.CultureInfo.InvariantCulture, out var value) && value > 0
+            ? value : null;
+    }
+
+    /// Exporta intrarea asa cum arata ACUM in formular, nu ultima valoare
+    /// salvata — altfel ai exporta o data pe care tocmai ai schimbat-o.
+    private void OnExportIcsClicked(object sender, RoutedEventArgs e)
+    {
+        if (HasExpiryCheck.IsChecked != true || ExpiryPicker.SelectedDate is null) return;
+
+        var snapshot = new VaultEntry
+        {
+            Id = _entryId,
+            Name = NameBox.Text,
+            ExpiresAt = ExpiryPicker.SelectedDate,
+            PriceAmount = ParsedPrice(),
+            BillingPeriod = ParsedPrice() is null
+                ? null
+                : (BillingPeriodCombo.SelectedItem as BillingPeriod? ?? BillingPeriod.Monthly),
+            ReminderEnabled = true,
+            ReminderDaysBefore = SelectedReminderDays(),
+        };
+
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Filter = "Fișier calendar (*.ics)|*.ics",
+            FileName = $"Reinnoire-{NameBox.Text}.ics",
+        };
+        if (dialog.ShowDialog() != true) return;
+
+        RenewalReminders.WriteIcs(snapshot, dialog.FileName);
+        // Se deschide in Calendar, gata de adaugat.
+        System.Diagnostics.Process.Start(
+            new System.Diagnostics.ProcessStartInfo(dialog.FileName) { UseShellExecute = true });
     }
 }

@@ -165,6 +165,9 @@ public partial class MainWindow
             ? _store.Entries
             : _store.Entries.Where(entry => entry.MatchesSearch(query)).ToList();
         EntriesList.ItemsSource = entries.Select(e => new EntryRow(e)).ToList();
+        // Totalul se recalculeaza pe TOATE intrarile, nu pe cele filtrate:
+        // o cautare activa n-are voie sa schimbe cat platesti lunar.
+        RefreshMonthlyTotal();
 
         var expiring = _store.ExpiringSoon();
         if (expiring.Count == 0)
@@ -283,5 +286,35 @@ public partial class MainWindow
         {
             new Wpf.Ui.Controls.MessageBox { Title = "Import eșuat", Content = ex.Message }.ShowDialogAsync();
         }
+    }
+
+    // ─── v0.7.0: copiere rapida din lista + cost total ───────────────────
+
+    private void OnCopyUsernameFromList(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is EntryRow row)
+            Services.SecureClipboard.Copy(row.Entry.Username);
+    }
+
+    private void OnCopyPasswordFromList(object sender, RoutedEventArgs e)
+    {
+        if ((sender as FrameworkElement)?.Tag is not EntryRow row) return;
+        var secret = VaultDpapiStore.Read(row.Entry.Id, VaultDpapiStore.SecretSlot.Password);
+        Services.SecureClipboard.Copy(secret);
+    }
+
+    /// Totalul lunar echivalent: abonamentele anuale se impart la 12, altfel
+    /// suma ar sari haotic in functie de cate plati anuale sunt in lista.
+    private void RefreshMonthlyTotal()
+    {
+        var costs = _store.Entries.Select(x => x.MonthlyCost).Where(c => c is not null).ToList();
+        if (costs.Count == 0)
+        {
+            MonthlyTotalBar.Visibility = Visibility.Collapsed;
+            return;
+        }
+        var monthly = costs.Sum(c => c!.Value);
+        MonthlyTotalText.Text = $"{monthly:0} €/lună · {monthly * 12:0} €/an";
+        MonthlyTotalBar.Visibility = Visibility.Visible;
     }
 }

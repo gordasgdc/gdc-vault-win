@@ -18,13 +18,32 @@
             <ui:CardExpander Header="Credențiale" IsExpanded="True" Margin="0,0,0,12">
                 <StackPanel Margin="4">
                     <TextBlock Text="URL login" Margin="0,0,0,4" />
-                    <ui:TextBox x:Name="LoginUrlBox" Margin="0,0,0,8" />
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox Grid.Column="0" x:Name="LoginUrlBox" TextChanged="OnUrlTextChanged" />
+                        <ui:Button Grid.Column="1" x:Name="LoginUrlBoxLaunchButton" Margin="4,0,0,0"
+                                   Click="OnLaunchUrlClicked" Tag="{Binding ElementName=LoginUrlBox}"
+                                   ToolTip="Deschide în browser">
+                            <ui:SymbolIcon Symbol="Open24" />
+                        </ui:Button>
+                    </Grid>
                     <TextBlock Text="Utilizator" Margin="0,0,0,4" />
-                    <ui:TextBox x:Name="UsernameBox" Margin="0,0,0,8" />
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox Grid.Column="0" x:Name="UsernameBox" />
+                        <ui:Button Grid.Column="1" Content="Copiază" Margin="4,0,0,0" Click="OnCopyUsernameClicked" />
+                    </Grid>
                     <TextBlock Text="Parolă" Margin="0,0,0,4" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
@@ -33,6 +52,9 @@
                             <ui:TextBox x:Name="PasswordRevealBox" Visibility="Collapsed" TextChanged="OnPasswordRevealChanged" />
                         </Grid>
                         <ui:Button Grid.Column="1" x:Name="PasswordEyeButton" Content="👁" Margin="4,0,0,0" Click="OnTogglePasswordReveal" ToolTip="Arată/Ascunde" />
+                        <ui:Button Grid.Column="3" Margin="4,0,0,0" Click="OnGeneratePasswordClicked" ToolTip="Generează parolă de 24 de caractere">
+                            <ui:SymbolIcon Symbol="Wand24" />
+                        </ui:Button>
                         <ui:Button Grid.Column="2" Content="Copiază" Margin="4,0,0,0" Click="OnCopyPasswordClicked" />
                     </Grid>
 
@@ -71,6 +93,22 @@
                     <ComboBox x:Name="LicenseTypeCombo" Margin="0,0,0,8" />
                     <CheckBox x:Name="HasExpiryCheck" Content="Are dată de expirare" Checked="OnExpiryToggled" Unchecked="OnExpiryToggled" Margin="0,0,0,6" />
                     <DatePicker x:Name="ExpiryPicker" Margin="0,0,0,8" />
+
+                    <CheckBox x:Name="ReminderCheck" Content="Trimite notificare înainte de expirare"
+                              Checked="OnReminderToggled" Unchecked="OnReminderToggled" Margin="0,0,0,6" />
+                    <StackPanel x:Name="ReminderDaysPanel" Orientation="Horizontal" Margin="0,0,0,8">
+                        <CheckBox x:Name="Remind30" Content="30 z" Margin="0,0,10,0" />
+                        <CheckBox x:Name="Remind7" Content="7 z" Margin="0,0,10,0" />
+                        <CheckBox x:Name="Remind3" Content="3 z" Margin="0,0,16,0" />
+                        <ui:Button Content="Export în calendar (.ics)" Click="OnExportIcsClicked"
+                                   ToolTip="Se deschide în Calendar și se sincronizează pe telefon" />
+                    </StackPanel>
+
+                    <TextBlock Text="Cost (opțional)" Margin="0,0,0,4" />
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <ui:TextBox x:Name="PriceBox" Width="120" PlaceholderText="ex. 59,99" />
+                        <ComboBox x:Name="BillingPeriodCombo" Width="120" Margin="8,0,0,0" />
+                    </StackPanel>
                     <TextBlock Text="Cheie de serie" Margin="0,0,0,4" />
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -91,9 +129,31 @@
             <ui:CardExpander Header="Resurse" IsExpanded="True" Margin="0,0,0,12">
                 <StackPanel Margin="4">
                     <TextBlock Text="Link descărcare" Margin="0,0,0,4" />
-                    <ui:TextBox x:Name="DownloadUrlBox" Margin="0,0,0,8" />
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox Grid.Column="0" x:Name="DownloadUrlBox" TextChanged="OnUrlTextChanged" />
+                        <ui:Button Grid.Column="1" x:Name="DownloadUrlBoxLaunchButton" Margin="4,0,0,0"
+                                   Click="OnLaunchUrlClicked" Tag="{Binding ElementName=DownloadUrlBox}"
+                                   ToolTip="Deschide în browser">
+                            <ui:SymbolIcon Symbol="Open24" />
+                        </ui:Button>
+                    </Grid>
                     <TextBlock Text="Link actualizări" Margin="0,0,0,4" />
-                    <ui:TextBox x:Name="UpdateUrlBox" Margin="0,0,0,8" />
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox Grid.Column="0" x:Name="UpdateUrlBox" TextChanged="OnUrlTextChanged" />
+                        <ui:Button Grid.Column="1" x:Name="UpdateUrlBoxLaunchButton" Margin="4,0,0,0"
+                                   Click="OnLaunchUrlClicked" Tag="{Binding ElementName=UpdateUrlBox}"
+                                   ToolTip="Deschide în browser">
+                            <ui:SymbolIcon Symbol="Open24" />
+                        </ui:Button>
+                    </Grid>
                     <TextBlock Text="Notițe" Margin="0,0,0,4" />
                     <ui:TextBox x:Name="NotesBox" AcceptsReturn="True" MinHeight="110" MaxHeight="220"
                                 TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsTab="True" />
