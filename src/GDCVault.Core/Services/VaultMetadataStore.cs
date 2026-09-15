@@ -17,6 +17,12 @@ public sealed class VaultMetadataStore
 
     public List<VaultEntry> Entries { get; private set; } = new();
 
+    /// Copia gasita la pornire cand fisierul principal lipsea sau era
+    /// necitibil. UI-ul o foloseste ca sa OFERE restaurarea — nu restauram
+    /// automat: o suprascriere tacuta a datelor e exact ce nu vrei sa faca
+    /// o aplicatie de tip seif.
+    public (string Path, List<VaultEntry> Entries)? RecoverableBackup { get; private set; }
+
     public VaultMetadataStore()
     {
         var dir = Path.Combine(
@@ -25,25 +31,57 @@ public sealed class VaultMetadataStore
         Directory.CreateDirectory(dir);
         _filePath = Path.Combine(dir, "entries.json");
         Load();
+
+        // Copie la fiecare pornire, cu datele deja incarcate. Daca lipsesc,
+        // Backup nu scrie nimic (vezi AutoBackupService).
+        AutoBackupService.Backup(Entries);
     }
 
     private void Load()
     {
-        if (!File.Exists(_filePath)) return;
         try
         {
-            var json = File.ReadAllText(_filePath);
-            Entries = JsonSerializer.Deserialize<List<VaultEntry>>(json, JsonOptions) ?? new();
+            if (File.Exists(_filePath))
+            {
+                var json = File.ReadAllText(_filePath);
+                var decoded = JsonSerializer.Deserialize<List<VaultEntry>>(json, JsonOptions);
+                if (decoded is { Count: > 0 })
+                {
+                    Entries = decoded;
+                    return;
+                }
+            }
         }
         catch
         {
-            // Fisier corupt/lipsa - pornim cu lista goala in loc sa picam aplicatia.
-            Entries = new();
+            // Fisier corupt - cade mai jos, la cautarea unei copii bune.
         }
+
+        // Fisier lipsa, gol sau necitibil (mutare pe alt disc, folder nou,
+        // JSON trunchiat de o inchidere brusca).
+        Entries = new();
+        RecoverableBackup = AutoBackupService.LatestRestorable();
     }
+
+    /// Aplica o copie gasita la pornire. Inainte de suprascriere face inca o
+    /// copie a starii curente — daca restaurarea e o greseala, se poate
+    /// intoarce.
+    public void Restore((string Path, List<VaultEntry> Entries) backup)
+    {
+        AutoBackupService.Backup(Entries);
+        Entries = backup.Entries;
+        RecoverableBackup = null;
+        Save();
+    }
+
+    public void DismissRecovery() => RecoverableBackup = null;
 
     private void Save()
     {
+        // Copie INAINTE de scriere, din ce e ACUM PE DISC — nu din `Entries`,
+        // care e deja starea noua.
+        AutoBackupService.BackupFile(_filePath);
+
         var json = JsonSerializer.Serialize(Entries, JsonOptions);
         File.WriteAllText(_filePath, json);
     }

@@ -1,5 +1,14 @@
 # Changelog — GDC Vault (Windows)
 
+## v0.8.0 (2026-09-15) — Copii de siguranta automate
+
+### Added
+- **Copii de siguranta automate**, criptate, in `%AppData%/GDCVault/Backups/`:
+  la fiecare pornire si inainte de fiecare salvare. Se pastreaza ultimele 10.
+- **Recuperare**: daca la pornire fisierul cu aplicatiile tale lipseste sau nu
+  poate fi citit, aplicatia gaseste cea mai recenta copie buna si iti ofera
+  restaurarea.
+
 ## v0.7.0 (2026-09-15) — Paritate cu macOS: abonamente, linkuri, parole
 
 ### Added

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using GDCVault.Core.Models;
 using GDCVault.Core.Services;
@@ -37,6 +38,9 @@ public partial class MainWindow
         RefreshProfileDisplay();
         Loaded += async (_, _) =>
         {
+            // Inaintea verificarii de update: daca seiful e gol si exista o
+            // copie buna, aia e prima intrebare care conteaza.
+            OfferRecoveryIfNeeded();
             await MaybeShowUpdatePopupAsync(respectDismissal: true);
             await _license.RefreshRevocationAsync();
         };
@@ -316,5 +320,33 @@ public partial class MainWindow
         var monthly = costs.Sum(c => c!.Value);
         MonthlyTotalText.Text = $"{monthly:0} €/lună · {monthly * 12:0} €/an";
         MonthlyTotalBar.Visibility = Visibility.Visible;
+    }
+
+    /// Ofera restaurarea cand fisierul cu intrari lipseste sau e necitibil.
+    /// Se OFERA, nu se aplica automat.
+    private void OfferRecoveryIfNeeded()
+    {
+        if (_store.RecoverableBackup is not { } backup) return;
+
+        var stamp = Path.GetFileNameWithoutExtension(backup.Path).Replace("vault_backup_", "");
+        var answer = MessageBox.Show(
+            $"Fisierul cu aplicatiile tale lipseste sau nu a putut fi citit.\n\n" +
+            $"Am gasit o copie de siguranta cu {backup.Entries.Count} " +
+            $"{(backup.Entries.Count == 1 ? "aplicatie" : "aplicatii")} ({stamp}).\n\n" +
+            "Parolele si cheile de serie sunt pastrate separat si nu se pierd.\n\n" +
+            "Restaurezi acum?",
+            "Datele seifului lipsesc",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        if (answer == MessageBoxResult.Yes)
+        {
+            _store.Restore(backup);
+            Reload();
+        }
+        else
+        {
+            _store.DismissRecovery();
+        }
     }
 }
