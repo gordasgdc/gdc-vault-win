@@ -1,5 +1,14 @@
 # Changelog — GDC Vault (Windows)
 
+## v0.7.0 (2026-09-15) — Paritate cu macOS: abonamente, linkuri, parole
+
+### Added
+- Cost optional per abonament (lunar/anual) si calcul al costului lunar.
+- Reminder de reinnoire cu export in calendar (.ics), sincronizabil pe telefon.
+- Generator de parole de 24 de caractere, fara caractere confundabile.
+- Deschiderea linkurilor in browserul implicit.
+- Copiere securizata in clipboard, cu golire automata dupa 45 de secunde.
+
 ## v0.6.6 (2026-09-14) — Contrast si teme
 
 ### Fixed
