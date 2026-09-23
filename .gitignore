@@ -2,3 +2,6 @@ bin/
 obj/
 .vs/
 .DS_Store
+
+# Stare de lucru internă (Regula 50), doar local
+PROJECT_STATE.md
